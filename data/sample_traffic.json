@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-11-04T06:00:00+05:30",
+  "segments": [
+    {"segment_id": "S1", "start": [28.6315,77.2167], "end": [28.5703,77.3240], "congestion_level": 0.6, "avg_speed_kmph": 25},
+    {"segment_id": "S2", "start": [28.5703,77.3240], "end": [28.4936,77.0896], "congestion_level": 0.3, "avg_speed_kmph": 40},
+    {"segment_id": "S3", "start": [28.4936,77.0896], "end": [28.5682,77.2378], "congestion_level": 0.8, "avg_speed_kmph": 15}
+  ]
+}
