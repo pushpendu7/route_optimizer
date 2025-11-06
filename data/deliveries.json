@@ -1,6 +1,62 @@
 [
-  {"id": "D001", "address": "Connaught Place, New Delhi, India", "lat": 28.6315, "lon": 77.2167, "priority": "high", "package_size":"small"},
-  {"id": "D002", "address": "Sector 18, Noida, India", "lat": 28.5703, "lon": 77.3240, "priority": "medium", "package_size":"medium"},
-  {"id": "D003", "address": "Gurgaon Cyber City, Gurgaon, India", "lat": 28.4936, "lon": 77.0896, "priority": "low", "package_size":"large"},
-  {"id": "D004", "address": "Lajpat Nagar, New Delhi, India", "lat": 28.5682, "lon": 77.2378, "priority": "medium", "package_size":"small"}
+    {
+        "id": "ORD001",
+        "customer_name": "Sourav Banerjee",
+        "address": "12/3, Jatindra Mohan Avenue, Jodhpur Park, Kolkata, West Bengal 700068",
+        "lat": 22.619085,
+        "lon": 88.403029,
+        "priority": "high",
+        "package_size": "medium",
+        "fragile": true
+    },
+    {
+        "id": "ORD002",
+        "customer_name": "Mitali Ghosh",
+        "address": "45, Shyambazar Crossing, Shyambazar, Kolkata, West Bengal 700006",
+        "lat": 22.615411,
+        "lon": 88.343062,
+        "priority": "medium",
+        "package_size": "small",
+        "fragile": false
+    },
+    {
+        "id": "ORD003",
+        "customer_name": "Arjun Chakraborty",
+        "address": "7B, Kankurgachi Main Road, Kankurgachi, Kolkata, West Bengal 700054",
+        "lat": 22.640267,
+        "lon": 88.401875,
+        "priority": "high",
+        "package_size": "large",
+        "fragile": true
+    },
+    {
+        "id": "ORD004",
+        "customer_name": "Rina Dutta",
+        "address": "102, Dum Dum Road, Belgachia, Kolkata, West Bengal 700037",
+        "lat": 22.595167,
+        "lon": 88.359004,
+        "priority": "low",
+        "package_size": "medium",
+        "fragile": false
+    },
+    {
+        "id": "ORD005",
+        "customer_name": "Partha Sen",
+        "address": "23, Maniktala Road, Maniktala, Kolkata, West Bengal 700006",
+        "lat": 22.633627,
+        "lon": 88.416699,
+        "priority": "medium",
+        "package_size": "small",
+        "fragile": false
+    },
+    {
+        "id": "ORD006",
+        "customer_name": "Ananya Mukherjee",
+        "address": "9, Bagbazar Street, Bagbazar, Kolkata, West Bengal 700004",
+        "lat": 22.599717,
+        "lon": 88.378695,
+        "priority": "high",
+        "package_size": "large",
+        "fragile": true
+    }
 ]

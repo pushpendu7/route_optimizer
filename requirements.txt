@@ -10,3 +10,6 @@ pydeck>=0.8.0
 python-dotenv>=1.0
 streamlit-folium
 ipykernel
+langchain
+langchain-groq
+langchain-google-genai

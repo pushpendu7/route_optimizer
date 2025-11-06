@@ -1,15 +1,21 @@
-# agents.py
 import os
 import time
+import re
+import random
+import config
 import json
+from datetime import datetime, timedelta
 from api_clients import get_weather_for_point
 from routing_client import route_between_points
 from models import load_model, train_and_save_model
 import numpy as np
+from dotenv import load_dotenv
+from langchain.chat_models import init_chat_model
+load_dotenv()
 
-# LLM import
-import openai
-openai.api_key = os.getenv("OPENAI_API_KEY")
+
+llm = init_chat_model(model = os.getenv("GROQ_MODEL_NAME"), model_provider = "groq")
+# llm = init_chat_model(model = os.getenv("GEMINI_MODEL_NAME"), model_provider = "google_genai")
 
 class PlannerAgent:
     """
@@ -31,26 +37,32 @@ class PlannerAgent:
             prompt += f"- id:{d['id']}, priority:{d.get('priority','medium')}, lat:{d['lat']}, lon:{d['lon']}, package_size:{d.get('package_size','medium')}\n"
         prompt += "\nReturn a JSON array of ids in preferred visit order."
         try:
-            resp = openai.ChatCompletion.create(
-                model=self.model,
-                messages=[{"role":"user","content":prompt}],
-                max_tokens=250,
-                temperature=0.2
-            )
-            text = resp['choices'][0]['message']['content'].strip()
+            print("Invoking LLM")
+            resp = llm.invoke([{"role":"user","content":prompt}])
+            print(f"Response Generated: {str(resp.content)}")
+            text = str(resp.content).strip()
+            # text = str(resp["content"]).strip()
             # attempt to parse json out of text
-            import re, json
             m = re.search(r'(\[.*\])', text, re.S)
             if m:
+                print("creating ordered json")
                 ordered = json.loads(m.group(1))
+                print("Completed ordering")
             else:
                 # fallback: split by common separators
+                print("Fallback: split by common separators")
                 ordered = [tok.strip().strip('"').strip("'") for tok in re.split(r'[,\\n]+', text) if tok.strip()]
+                print("Completed ordering")
+            print(f"LLM ({os.getenv('GROQ_MODEL_NAME')}) suggestion: {ordered}")
             return ordered
         except Exception as e:
             # fallback: simple sort by priority mapping and id
+            print(str(e))
             priority_map = {"high": 0, "medium": 1, "low": 2}
-            return sorted(deliveries, key=lambda x: (priority_map.get(x.get("priority","medium"),1), x["id"]))
+            ordered_delivery = sorted(deliveries, key=lambda x: (priority_map.get(x.get("priority","medium"),1), x["id"]))
+            ordered = [i['id'] for i in ordered_delivery]
+            print(f"Fallback sort based on Priority: {ordered}")
+            return ordered
 
 class OptimizerAgent:
     """
@@ -90,7 +102,6 @@ class OptimizerAgent:
                 per = route["duration_s"] / (len(points)-1)
                 est_segment_minutes = [per/60.0]*(len(points)-1)
         # Build ETA list
-        from datetime import datetime, timedelta
         now = datetime.now()
         eta_list = []
         cur = now
@@ -135,6 +146,7 @@ class MonitorAgent:
                     events.append({"type":"weather", "lat":loc["lat"], "lon":loc["lon"], "severity":"medium"})
         return events
 
+
 class DispatcherAgent:
     """
     Applies manual overrides and finalizes dispatch decisions.
@@ -157,3 +169,56 @@ class DispatcherAgent:
             # remove a stop
             plan['stops'] = [s for s in plan['stops'] if s.get('id') != override["id"]]
         return plan
+
+
+class DataGeneratorAgent:
+    def __init__(self):
+        self.locations = config.locations
+
+    def generate_orders(self, num_orders, location):
+        """
+        Generate realistic delivery orders using an LLM within given mapbox coordinates.
+        """
+        bounds = self.locations[location]["bounds"]
+        # Step 1: Generate random lat/lon pairs within bounds
+        coords = [
+            {
+                "lat": round(random.uniform(bounds["min_lat"], bounds["max_lat"]), 6),
+                "lon": round(random.uniform(bounds["min_lon"], bounds["max_lon"]), 6)
+            }
+            for _ in range(num_orders)
+        ]
+
+        # Step 2: Construct a system prompt for LLM
+        system_prompt = (
+            "You are a logistics data generator."
+            f"Generate delivery order JSON objects for a courier company in {location}"
+            "Each order should include: id, customer_name, address, lat, lon, priority, package_size, fragile."
+            f"Use realistic Bengali or Indian names and real street/locality-style addresses in {location}."
+            "Priorities should be 'high', 'medium', or 'low'. Package sizes: 'small', 'medium', 'large'."
+            "Fragile is true or false. "
+            "Return JSON only as string."
+        )
+
+        # Step 3: Combine lat/lon into the prompt
+        user_prompt = f"Generate {num_orders} delivery orders for these coordinates:\n{json.dumps(coords, indent = 2)}"
+
+        # Step 4: Call the LLM
+        response = llm.invoke([
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}],
+        )
+
+        # Step 5: Parse and return structured JSON
+        try:
+            orders = json.loads(response.content)
+            with open(config.DELIVERIES_FILE, 'w') as file:
+                json.dump(orders, file, indent=4)
+
+        except json.JSONDecodeError:
+            print("⚠️ Could not parse JSON. Raw LLM output:")
+            print(response.content)
+            return []
+        
+        # return orders
+

@@ -1,4 +1,5 @@
 import json
+import random
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -735,8 +736,6 @@ def display_route_plan_folium(route_data: dict, save_path: str = "route_plan.htm
 
 
 
-
-
 def display_route_plan_streamlit(route_data: dict):
     """
     Displays a delivery route plan using Folium inside Streamlit with numbered,
@@ -766,7 +765,7 @@ def display_route_plan_streamlit(route_data: dict):
         folium.Marker(
             [start_lat, start_lon],
             tooltip="Start Point (Depot)",
-            icon=folium.Icon(color="blue", icon="home", prefix="fa"),
+            icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa"),
         ).add_to(m)
 
         # List for route polyline
@@ -876,4 +875,3 @@ def json_to_table(json_data):
     # Convert to DataFrame
     df = pd.DataFrame(records)
     return df
-

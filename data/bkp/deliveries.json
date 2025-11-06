@@ -1,0 +1,6 @@
+[
+  {"id": "D001", "address": "Connaught Place, New Delhi, India", "lat": 28.6315, "lon": 77.2167, "priority": "high", "package_size":"small"},
+  {"id": "D002", "address": "Sector 18, Noida, India", "lat": 28.5703, "lon": 77.3240, "priority": "medium", "package_size":"medium"},
+  {"id": "D003", "address": "Gurgaon Cyber City, Gurgaon, India", "lat": 28.4936, "lon": 77.0896, "priority": "low", "package_size":"large"},
+  {"id": "D004", "address": "Lajpat Nagar, New Delhi, India", "lat": 28.5682, "lon": 77.2378, "priority": "medium", "package_size":"small"}
+]
