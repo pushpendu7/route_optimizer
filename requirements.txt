@@ -13,3 +13,4 @@ ipykernel
 langchain
 langchain-groq
 langchain-google-genai
+hdbscan

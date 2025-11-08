@@ -1,9 +1,10 @@
 import os
-import time
 import re
 import random
 import config
 import json
+import numpy as np
+import hdbscan
 from datetime import datetime, timedelta
 from api_clients import get_weather_for_point
 from routing_client import route_between_points
@@ -16,6 +17,102 @@ load_dotenv()
 
 llm = init_chat_model(model = os.getenv("GROQ_MODEL_NAME"), model_provider = "groq")
 # llm = init_chat_model(model = os.getenv("GEMINI_MODEL_NAME"), model_provider = "google_genai")
+
+class ClusteringAgent:
+    def __init__(self):
+        self.deliveries = config.deliveries
+        self.coordinates = [(order["lat"], order["lon"]) for order in self.deliveries]
+
+    def cluster_delivery_points_hdbscan_old(self, coordinates, min_cluster_size = 4, eps_km = 5):
+        """
+        Cluster delivery coordinates using HDBSCAN with Haversine distance.
+
+        Parameters:
+            coordinates (list of tuples): [(lat, lon), (lat, lon), ...]
+            min_cluster_size (int): Minimum cluster size.
+            eps_km (float): Approximate neighborhood size in kilometers (used to set min_samples).
+
+        Returns:
+            dict: {cluster_id: [coordinates]} and list of labels for each point.
+        """
+        # Convert coordinates to radians for Haversine metric
+        coords_radians = np.radians(np.array(coordinates))
+
+        # HDBSCAN clustering
+        clusterer = hdbscan.HDBSCAN(
+            min_cluster_size = min_cluster_size,
+            min_samples = 1,
+            metric = 'haversine',
+            cluster_selection_epsilon = eps_km / 6371.0,  # convert km to radians
+        )
+        cluster_labels = clusterer.fit_predict(coords_radians)
+
+        # Group by cluster ID
+        clusters = {}
+        for idx, label in enumerate(cluster_labels):
+            if label == -1:
+                # -1 = noise points
+                clusters.setdefault("Outlier", []).append(coordinates[idx])
+            else:
+                clusters.setdefault(label, []).append(coordinates[idx])
+
+        return clusters, cluster_labels
+    
+
+    def cluster_delivery_points_hdbscan(self, deliveries, min_cluster_size = 4, eps_km = 5):
+        """
+        Cluster delivery points using HDBSCAN with Haversine distance.
+
+        Parameters:
+            deliveries (list of dict): List of delivery dictionaries, each containing 'lat' and 'lon' keys.
+            min_cluster_size (int): Minimum cluster size.
+            eps_km (float): Approximate neighborhood size in kilometers (used to set min_samples).
+
+        Returns:
+            tuple:
+                clusters (dict): {cluster_id: [list of full delivery dicts]}
+                cluster_labels (list): Cluster label for each delivery (in same order as input)
+        """
+
+        # --- Extract coordinates ---
+        coordinates = [(d["lat"], d["lon"]) for d in deliveries]
+        coords_radians = np.radians(np.array(coordinates))
+
+        # --- Perform HDBSCAN clustering ---
+        clusterer = hdbscan.HDBSCAN(
+            min_cluster_size=min_cluster_size,
+            min_samples=1,
+            metric="haversine",
+            cluster_selection_epsilon=eps_km / 6371.0,  # Convert km to radians
+        )
+
+        cluster_labels = clusterer.fit_predict(coords_radians)
+
+        # --- Define color palette ---
+        colors_list = ["purple", "orange", "darkblue", "pink", "cadetblue", "gray", "lightgreen"]
+        unique_labels = set(cluster_labels)
+        colors = {
+            label: colors_list[label % len(colors_list)]
+            for label in unique_labels if label != -1
+        }
+        colors[-1] = "black"  # Outlier cluster
+
+        # --- Group full delivery dicts by cluster label ---
+        clusters = {}
+        # for idx, label in enumerate(cluster_labels):
+        #     cluster_key = f"Zone_{label}" if label != -1 else "Outlier"
+        #     clusters.setdefault(cluster_key, []).append(deliveries[idx])
+
+        for delivery, label in zip(deliveries, cluster_labels):
+            cluster_key = f"Zone_{label}" if label != -1 else "Outlier"
+            color = colors.get(label, "gray")
+            delivery["cluster_id"] = cluster_key
+            delivery["color"] = color
+            clusters.setdefault(cluster_key, []).append(delivery)
+
+        # return clusters, cluster_labels
+        return clusters, deliveries
+
 
 class PlannerAgent:
     """
@@ -213,7 +310,7 @@ class DataGeneratorAgent:
         try:
             orders = json.loads(response.content)
             with open(config.DELIVERIES_FILE, 'w') as file:
-                json.dump(orders, file, indent=4)
+                json.dump(orders, file, indent = 4)
 
         except json.JSONDecodeError:
             print("⚠️ Could not parse JSON. Raw LLM output:")

@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
 import json
+import random
 import os
 from api_clients import get_static_map_image_url
-from agents import PlannerAgent, OptimizerAgent, MonitorAgent, DispatcherAgent, DataGeneratorAgent
+from agents import ClusteringAgent, PlannerAgent, OptimizerAgent, MonitorAgent, DispatcherAgent, DataGeneratorAgent
 from models import train_and_save_model
 from datetime import datetime
 import utils
@@ -55,6 +56,7 @@ start_lat = depot[0]
 start_lon = depot[1]
 operator_instructions = st.sidebar.text_area("Operator Instructions", value = "Deliver high-priority first; avoid highways if heavy rain.")
 # instantiate agents
+clusterer = ClusteringAgent()
 planner = PlannerAgent()
 optimizer = OptimizerAgent()
 monitor = MonitorAgent(traffic_feed = traffic_feed, weather_feed = weather_feed)
@@ -63,6 +65,86 @@ data_generator = DataGeneratorAgent()
 
 
 tab_locations, tab_route, tab_data = st.tabs(["Locations", "Route Optimization", "Data Generation"])
+
+
+with tab_locations:
+
+    option_container = st.container(horizontal = True, vertical_alignment = "center")
+    locations = config.locations
+    option_container.markdown(":grey[Locations:]", width = "content")
+    selected_location = option_container.selectbox("Locations", options = locations.keys(), width = 200, label_visibility = "collapsed")
+    with option_container.popover("Overlay", width = "content"):
+        show_depots = st.checkbox("Depots")
+        show_bounds = st.checkbox("Bounds")
+        show_deliveries = st.checkbox("Deliveries")
+    
+    if selected_location:
+        map_center = locations[selected_location]["center"]
+        map_bounds = locations[selected_location]["bounds"]
+        depots = locations[selected_location]["depots"]
+
+    with option_container.container(horizontal = True, vertical_alignment = "center", border = True):
+        n_orders = st.number_input("No. of orders", value = 5, min_value = 1, key = "n_orders", max_value = 20, width = 150, icon = "📦", label_visibility = "collapsed")
+        generate_btn = st.button("Generate", help = "Generate orders", on_click = lambda: data_generator.generate_orders(n_orders, selected_location))
+        re_cluster_btn = st.button("Re-Cluster", help = "Cluster orders", disabled = not show_deliveries)
+    
+    map = folium.Map(location = map_center, zoom_start = 11, control_scale = True)
+
+    if show_bounds:
+        folium.Rectangle(
+            bounds=[
+                [map_bounds["min_lat"], map_bounds["min_lon"]],
+                [map_bounds["max_lat"], map_bounds["max_lon"]],
+            ],
+            color = "blue",
+            fill = True,
+            fill_opacity = 0.1,
+            tooltip = selected_location
+        ).add_to(map)
+    
+    if show_depots:
+        for i, (lat, lon) in enumerate(depots, start = 1):
+            folium.Marker(
+                [lat, lon],
+                tooltip=f"{selected_location}: Depot {i}",
+                icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa")
+            ).add_to(map)
+
+    if show_deliveries or re_cluster_btn:
+
+        clusters, deliveries = clusterer.cluster_delivery_points_hdbscan(config.load_json(config.DELIVERIES_FILE), 4)
+        
+        for order in deliveries:
+            popup_html = f"""
+            <b>Stop ID:</b> {order['id']}<br>
+            <b>Customer Name:</b> {order.get('customer_name', 'N/A')}<br>
+            <b>Address:</b> {order.get('address', 'N/A')}<br>
+            <b>Priority:</b> {order.get('priority', 'N/A').capitalize()}<br>
+            <b>Package Size:</b> {order.get('package_size', 'N/A').capitalize()}<br>
+            <b>Cluster:</b> {order['cluster_id']}<br>
+            """
+
+            folium.Marker(
+                [order["lat"], order["lon"]],
+                tooltip=f"{order.get('address', 'N/A')}",
+                popup = folium.Popup(popup_html, max_width = 300),
+                icon = folium.Icon(color = order["color"], icon="info-sign"),
+            ).add_to(map)
+
+    
+    st_folium(map, width=700, height=400, use_container_width = True)
+
+    df = pd.DataFrame(config.load_json(config.DELIVERIES_FILE))
+    # st.markdown(f"##### {len(df)} Undelivered Orders")
+    # st.dataframe(df, width = "content")
+
+    st.subheader(f":blue[Total {len(df)} Deliveries by {len(clusters.items())} Cluster Zone]")
+
+    for cluster_id, cluster_deliveries in clusters.items():
+        st.markdown(f"##### 🚚 {cluster_id} :grey[({len(cluster_deliveries)} deliveries)]")
+        df_cluster = pd.DataFrame(cluster_deliveries)[["id", "customer_name", "address", "priority", "package_size", "fragile"]]
+        st.dataframe(df_cluster, width = "content")
+
 
 with tab_route:
     # -------------------------
@@ -164,63 +246,6 @@ with tab_route:
             if st.button("Mark current stop as delivered"):
                 st.success("Marked as delivered (demo)")
 
-# st.sidebar.markdown("---")
-# st.sidebar.caption("Configure API keys in environment variables: OPENWEATHER_API_KEY, MAPBOX_TOKEN, ORS_API_KEY, OPENAI_API_KEY")
 
-
-with tab_locations:
-
-    option_container = st.container(horizontal = True, vertical_alignment = "center")
-    locations = config.locations
-    option_container.markdown(":grey[Locations:]", width = "content")
-    selected_location = option_container.selectbox("Locations", options = locations.keys(), width = 200, label_visibility = "collapsed")
-    show_depots = option_container.checkbox("Show Depots")
-    
-    if selected_location:
-        map_center = locations[selected_location]["center"]
-        map_bounds = locations[selected_location]["bounds"]
-        depots = locations[selected_location]["depots"]
-
-    map = folium.Map(location = map_center, zoom_start = 11, control_scale = True)
-
-    folium.Rectangle(
-        bounds=[
-            [map_bounds["min_lat"], map_bounds["min_lon"]],
-            [map_bounds["max_lat"], map_bounds["max_lon"]],
-        ],
-        color = "blue",
-        fill = True,
-        fill_opacity = 0.1,
-        tooltip = selected_location
-    ).add_to(map)
-    
-    if show_depots:
-        for i, (lat, lon) in enumerate(depots, start = 1):
-            folium.Marker(
-                [lat, lon],
-                tooltip=f"{selected_location}: Depot {i}",
-                icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa")
-            ).add_to(map)
-
-    st_folium(map, width=500, height=300)
-
-with tab_data:
-    st.header("Data Generator")
-    st.subheader("Deliveries", divider = "grey", anchor = False)
-    
-    try:
-        st.markdown("#### Generate")
-        with st.container(horizontal = True, vertical_alignment = "center"):
-            st.markdown(":grey[Location:]", width = "content")
-            selected_location = st.selectbox("Location", options = config.locations.keys(), label_visibility = "collapsed", width = 200)
-            st.markdown(":grey[Numner of Orders:]", width = "content")
-            n_orders = st.number_input("No. of orders", value = 5, min_value = 1, max_value = 10, width = 150, label_visibility = "collapsed")
-            generate_btn = st.button("Generate", on_click = lambda: data_generator.generate_orders(n_orders, selected_location))
-
-        df = pd.DataFrame(config.load_json(config.DELIVERIES_FILE))
-        st.markdown("##### Current Orders")
-        st.dataframe(df, width = "content")
-    except Exception as e:
-        st.exception(e)
-
-st.sidebar.write(st.session_state)
+with st.sidebar:
+    utils.display_dict_in_streamlit_nested(st.session_state)
