@@ -19,7 +19,6 @@ weather_feed = load_json(WEATHER_FILE)
 
 locations = {
     "Kolkata" : {
-        "center": [22.5726, 88.3639],
         "bounds": {
                     "min_lat": 22.6400,
                     "max_lat": 22.5000,

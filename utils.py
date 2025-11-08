@@ -5,7 +5,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import pydeck as pdk
-import requests
+import math
 import folium
 from folium import plugins
 from streamlit_folium import st_folium
@@ -171,6 +171,67 @@ def display_route_plan_streamlit(route_data: dict):
     except Exception as e:
         st.error(f"Map rendering failed: {e}")
         st.info("Make sure `streamlit-folium` and `folium` are installed.")
+
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """
+    Compute Haversine distance between two lat/lon points in kilometers.
+    """
+    R = 6371  # Earth radius in km
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = math.sin(dlat/2)**2 + math.cos(lat1)*math.cos(lat2)*math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    return R * c
+
+def assign_nearest_depot_to_clusters(clusters, depots):
+    """
+    Assigns nearest depot to each delivery cluster based on centroid location.
+
+    Parameters:
+        clusters (dict): {cluster_id: [delivery_dicts]} from HDBSCAN output
+        depots (list[dict]): [{"name": "Depot A", "lat": 22.57, "lon": 88.36}, ...]
+
+    Returns:
+        list[dict]: cluster assignment info (cluster_id, centroid, depot, distance_km)
+    """
+
+    cluster_assignments = []
+
+    for cluster_id, deliveries in clusters.items():
+        # Skip outliers
+        if cluster_id == "Outlier" or len(deliveries) == 0:
+            continue
+
+        # --- Compute centroid of cluster ---
+        avg_lat = sum(d["lat"] for d in deliveries) / len(deliveries)
+        avg_lon = sum(d["lon"] for d in deliveries) / len(deliveries)
+
+        # --- Find nearest depot ---
+        nearest_depot = None
+        min_distance = float("inf")
+
+        for idx, (dep_lat, dep_lon) in enumerate(depots):
+            dist = haversine_distance(avg_lat, avg_lon, dep_lat, dep_lon)
+            if dist < min_distance:
+                min_distance = dist
+                nearest_depot = (dep_lat, dep_lon)
+                depot_index = idx + 1  # for labeling (Depot 1, Depot 2, etc.)
+
+        cluster_assignments.append({
+            "cluster_id": cluster_id,
+            "centroid_lat": avg_lat,
+            "centroid_lon": avg_lon,
+            "nearest_depot_id": f"Depot_{depot_index}",
+            "depot_lat": nearest_depot[0],
+            "depot_lon": nearest_depot[1],
+            "distance_km": round(min_distance, 2)
+        })
+
+    return cluster_assignments
+
 
 
 def json_to_table(json_data):

@@ -59,7 +59,7 @@ class ClusteringAgent:
         return clusters, cluster_labels
     
 
-    def cluster_delivery_points_hdbscan(self, deliveries, min_cluster_size = 4, eps_km = 5):
+    def cluster_delivery_points_hdbscan(self, deliveries, min_cluster_size = 3, eps_km = 5):
         """
         Cluster delivery points using HDBSCAN with Haversine distance.
 
@@ -99,9 +99,6 @@ class ClusteringAgent:
 
         # --- Group full delivery dicts by cluster label ---
         clusters = {}
-        # for idx, label in enumerate(cluster_labels):
-        #     cluster_key = f"Zone_{label}" if label != -1 else "Outlier"
-        #     clusters.setdefault(cluster_key, []).append(deliveries[idx])
 
         for delivery, label in zip(deliveries, cluster_labels):
             cluster_key = f"Zone_{label}" if label != -1 else "Outlier"
@@ -110,7 +107,6 @@ class ClusteringAgent:
             delivery["color"] = color
             clusters.setdefault(cluster_key, []).append(delivery)
 
-        # return clusters, cluster_labels
         return clusters, deliveries
 
 
