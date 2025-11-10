@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 from api_clients import get_static_map_image_url
 from agents import ClusteringAgent, PlannerAgent, OptimizerAgent, MonitorAgent, DispatcherAgent, DataGeneratorAgent
 from models import train_and_save_model
@@ -24,8 +25,8 @@ weather_feed = config.weather_feed
 # Simple authentication / role selection (demo mode)
 st.sidebar.title("User Login")
 role = st.sidebar.selectbox("Role", ["Dispatch Operator (Admin)", "Delivery Agent"])
-username = st.sidebar.text_input("Username", value = "demo_user")
-if st.sidebar.button("Train sample model (optional)"):
+# username = st.sidebar.text_input("Username", value = "demo_user")
+if st.sidebar.button("Train Travel Time Calculator model"):
     train_and_save_model()
     st.sidebar.success("Trained and saved travel_time_model.pkl")
 
@@ -66,9 +67,9 @@ with tab_locations:
     option_container.markdown(":grey[Locations:]", width = "content")
     selected_location = option_container.selectbox("Locations", options = locations.keys(), width = 200, label_visibility = "collapsed")
     with option_container.popover("Overlay", width = "content"):
-        show_depots = st.checkbox("Depots")
-        show_bounds = st.checkbox("Bounds")
-        show_deliveries = st.checkbox("Deliveries")
+        show_depots = st.checkbox("Depots", value = True)
+        show_bounds = st.checkbox("Bounds", value = True)
+        show_deliveries = st.checkbox("Deliveries", value = True)
     
     if selected_location:
         # map_center = locations[selected_location]["center"]
@@ -76,7 +77,10 @@ with tab_locations:
         depots = locations[selected_location]["depots"]
 
     with option_container.container(horizontal = True, vertical_alignment = "center", border = True):
+        st.markdown(":grey[Orders:]")
         n_orders = st.number_input("No. of orders", value = 5, min_value = 1, key = "n_orders", max_value = 20, width = 150, icon = "📦", label_visibility = "collapsed")
+        st.markdown(":grey[Proximity (km):]")
+        proximity_km = st.number_input("Proximity (km)", value = 15, min_value = 1, key = "proximity_km", max_value = 100, width = 150, icon = "📍", label_visibility = "collapsed")
         generate_btn = st.button("Generate", help = "Generate orders", on_click = lambda: data_generator.generate_orders(n_orders, selected_location))
         re_cluster_btn = st.button("Re-Cluster", help = "Cluster orders", disabled = not show_deliveries)
     
@@ -104,9 +108,9 @@ with tab_locations:
                 icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa")
             ).add_to(map)
 
-    if show_deliveries or re_cluster_btn:
+    if re_cluster_btn or show_deliveries:
 
-        clusters, deliveries = clusterer.cluster_delivery_points_hdbscan(config.load_json(config.DELIVERIES_FILE), 2)
+        clusters, deliveries = clusterer.cluster_delivery_points_hdbscan(config.load_json(config.DELIVERIES_FILE), 2, proximity_km)
         
         for order in deliveries:
             popup_html = f"""
@@ -145,13 +149,21 @@ with tab_route:
         st.header("Operator / Admin Dashboard")
 
         zone_tabs = st.tabs([i.replace("_", " ") for i in list(clusters.keys())])
+        if "route_plans" not in st.session_state:
+            st.session_state["route_plans"] = set()
 
         for i, deliveries in enumerate(clusters.items()):
             zone = deliveries[0]
             zone_orders = deliveries[1]
-            depot = zone
+            for dep in depot_assignments:
+                if dep["cluster_id"] == zone:
+                    zone_depot_coordinates = [dep["depot_lat"], dep["depot_lon"]]
+
             with zone_tabs[i]:
-                st.markdown(f"#### :grey[{zone.replace('_', ' ')} Deliveries]")
+                with st.container(horizontal = True, vertical_alignment = "center"):
+                    st.markdown(f"#### :grey[{zone.replace('_', ' ')} Deliveries]", width = "content")
+                    with st.popover("Map Overlay"):
+                        show_all_depots = st.checkbox("Show All Depots", key = f"show_all_depots_{zone}")
                 
                 start_lat, start_lon = zone_orders[0]["lat"], zone_orders[0]["lon"]
                 zone_map = folium.Map(location = [start_lat, start_lon], zoom_start = 11, control_scale = True)
@@ -165,12 +177,19 @@ with tab_route:
                     <b>Package Size:</b> {order.get('package_size', 'N/A').capitalize()}<br>
                     """
 
-                    for i, (lat, lon) in enumerate(depots, start = 1):
+                    if show_all_depots:
+                        for i, (lat, lon) in enumerate(depots, start = 1):
+                            folium.Marker(
+                                [lat, lon],
+                                tooltip = f"{selected_location}: Depot {i}",
+                                icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa")
+                            ).add_to(zone_map)
+                    else:
                         folium.Marker(
-                            [lat, lon],
-                            tooltip = f"{selected_location}: Depot {i}",
-                            icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa")
-                        ).add_to(zone_map)
+                                zone_depot_coordinates,
+                                tooltip = f"{selected_location}: Depot {i}",
+                                icon = folium.Icon(color = "blue", icon = "warehouse", prefix = "fa")
+                            ).add_to(zone_map)
 
                     color_map = {"high": "red", "medium": "orange", "low": "green"}
                     priority = order.get("priority", "low").lower()
@@ -186,9 +205,98 @@ with tab_route:
                 st_folium(zone_map, width = 700, height = 500)
                 st.caption(":grey[Priorities:]  High = 🔴 Red | Medium = 🟠 Orange | Low = 🟢 Green")
                 
-                ordered_ids = planner.prioritize(zone_orders, operator_instructions)
-                st.write(" -> ".join(str(num) for num in ordered_ids))
-                st.write(depot)
+                if st.button("Optimized Route Plan", key = f"create_plan_{zone}"):
+                    ordered_ids = planner.prioritize(zone_orders, operator_instructions)
+                    # convert to list of delivery dicts in that order
+                    id_map = {d["id"]: d for d in zone_orders}
+                    ordered_delivery_dicts = [id_map[i] for i in ordered_ids if i in id_map]
+                    plan = optimizer.compute_plan((zone_depot_coordinates[0], zone_depot_coordinates[1]), ordered_delivery_dicts)
+                    st.session_state[f"current_plan_{zone}"] = plan
+                    st.session_state["route_plans"].add(f"current_plan_{zone}")
+                    st.success("Route Plan generated")
+
+                if f"current_plan_{zone}" in st.session_state:
+                    st.subheader("Current Plan Summary")
+                    zone_route_plan = st.session_state[f"current_plan_{zone}"]
+
+                    stops = zone_route_plan["stops"]
+                    segment_minutes = zone_route_plan.get("estimated_segment_minutes", [])
+                    etas = zone_route_plan.get("etas", [])
+                    route_summary = zone_route_plan.get("route_summary", {})
+
+                    # Calculate map center
+                    depot_start_lat, depot_start_lon = stops[0]["lat"], stops[0]["lon"]
+
+                    # List for route polyline
+                    route_coords = [(depot_start_lat, depot_start_lon)]
+
+                    # Add delivery stops
+                    for i, stop in enumerate(stops):
+                        if stop.get("id") == "START":
+                            continue
+
+                        lat, lon = stop["lat"], stop["lon"]
+                        route_coords.append((lat, lon))
+
+                        # Marker color by priority
+                        priority = stop.get("priority", "low").lower()
+                        color = color_map.get(priority, "gray")
+
+                        # ETA handling
+                        if i < len(etas):
+                            try:
+                                eta_time = datetime.fromisoformat(etas[i])
+                                eta_str = eta_time.strftime("%Y-%m-%d %H:%M:%S")
+                            except Exception:
+                                eta_str = etas[i]
+                        else:
+                            eta_str = "N/A"
+
+                        travel_time = (
+                            f"{segment_minutes[i-1]:.1f} min" if i > 0 and i-1 < len(segment_minutes) else "N/A"
+                        )
+
+                        # Marker label (S, 1, 2, 3, etc.)
+                        marker_label = f"S" if str(stop["id"]).upper() == "START" else f"{i}"
+
+                        popup_html = f"""
+                        <b>Stop ID:</b> {stop['id']}<br>
+                        <b>Address:</b> {stop.get('address', 'N/A')}<br>
+                        <b>Priority:</b> {priority.capitalize()}<br>
+                        <b>Package Size:</b> {stop.get('package_size', 'N/A').capitalize()}<br>
+                        <b>ETA:</b> {eta_str}<br>
+                        <b>Travel Time:</b> {travel_time}
+                        """
+
+                        folium.Marker(
+                            [lat, lon],
+                            tooltip = f"Stop {i}: {stop.get('address', 'N/A')}",
+                            popup = folium.Popup(popup_html, max_width = 300),
+                            icon = folium.Icon(color = color, icon = marker_label, prefix = "fa"),
+                        ).add_to(zone_map)
+
+
+
+                    # Add route line connecting all stops
+                    folium.PolyLine(
+                        route_coords,
+                        color = "blue",
+                        weight = 4,
+                        opacity = 0.7,
+                        tooltip = "Planned Route Path",
+                    ).add_to(zone_map)
+
+                    st_folium(zone_map, width = 700, height = 500)
+
+                        # Add total route summary
+                    distance_km = route_summary.get("distance_m", 0) / 1000
+                    duration_min = route_summary.get("duration_s", 0) / 60
+                    st.markdown(f"**Total Distance:** {distance_km:.2f} km  |  **Estimated Duration:** {duration_min:.1f} minutes")
+
+###################################################################
+
+                # ordered_ids = planner.prioritize(zone_orders, operator_instructions)
+                # st.write(" -> ".join(str(num) for num in ordered_ids))
 
                 # df_zone_orders = pd.DataFrame(zone_orders)[["id", "address", "priority", "package_size"]]
                 # st.dataframe(df_zone_orders, hide_index = True, width = "content")
@@ -255,39 +363,63 @@ with tab_route:
     #             st.session_state["current_plan"] = new_plan
     #             st.success("Auto replan complete")
 
-    # # -------------------------
-    # # ROLE: Delivery Agent
-    # else:
-    #     st.header("Delivery Agent Dashboard")
-    #     st.subheader("Assigned Route")
-    #     if "current_plan" not in st.session_state:
-    #         st.info("No plan yet — Operator must generate a plan.")
-    #     else:
-    #         plan = st.session_state["current_plan"]
-    #         st.write("Sequence:")
-    #         for idx, stop in enumerate(plan["stops"]):
-    #             if stop.get("id") == "START":
-    #                 st.markdown(f"**{idx}. Depot** ({stop['lat']}, {stop['lon']})")
-    #             else:
-    #                 st.markdown(f"**{idx}. {stop['id']}** — {stop.get('address','')}")
-    #                 # arrival ETA if available
-    #                 if idx-1 < len(plan.get("etas",[])):
-    #                     st.caption(f"ETA: {plan['etas'][idx-1]}")
-    #         st.subheader("Map View")
-    #         try:
-    #             m = folium.Map(location=[start_lat, start_lon], zoom_start=11)
-    #             folium.Marker([start_lat, start_lon], tooltip="Depot", icon=folium.Icon(color="green")).add_to(m)
-    #             for stop in plan["stops"]:
-    #                 if stop.get("id") == "START": continue
-    #                 folium.Marker([stop["lat"], stop["lon"]], tooltip=f"{stop['id']}").add_to(m)
-    #             st_folium(m, width=700, height=500)
-    #         except Exception as e:
-    #             st.error("Map rendering requires streamlit-folium or folium installed.")
-    #         st.subheader("Agent Actions")
-    #         if st.button("Request Reroute (send reason)"):
-    #             st.success("Reroute request submitted to operator (demo)")
-    #         if st.button("Mark current stop as delivered"):
-    #             st.success("Marked as delivered (demo)")
+    # -------------------------
+    # ROLE: Delivery Agent
+    else:
+        st.header("Delivery Agent Dashboard")
+        st.subheader("Assigned Route")
+        if len(st.session_state["route_plans"]) == 0:
+            st.info("No plan yet — Operator must generate a plan.")
+
+        # if "current_plan" not in st.session_state:
+        #     st.info("No plan yet — Operator must generate a plan.")
+        else:
+            agent_list = []
+            for i, agent_route in enumerate(list(st.session_state["route_plans"])):
+                agent_list.append(f"Agent_{i}")
+
+            agent_tabs = st.tabs(agent_list)
+
+            # for i, plan in enumerate(list(st.session_state["route_plans"])):
+            for i in range(len(list(st.session_state["route_plans"]))):
+                with agent_tabs[i]:
+                    st.write("Sequence:")
+                    plan = st.session_state[list(st.session_state["route_plans"])[i]]
+                    for idx, stop in enumerate(plan["stops"]):
+                        if stop.get("id") == "START":
+                            st.markdown(f"**{idx}. Depot** ({stop['lat']}, {stop['lon']})")
+                        else:
+                            st.markdown(f"**{idx}. {stop['id']}** — {stop.get('address','')}")
+                            # arrival ETA if available
+                            if idx-1 < len(plan.get("etas",[])):
+                                st.caption(f"ETA: {plan['etas'][idx-1]}")
+
+            # plan = st.session_state["current_plan"]
+            
+            # st.write("Sequence:")
+            # for idx, stop in enumerate(plan["stops"]):
+            #     if stop.get("id") == "START":
+            #         st.markdown(f"**{idx}. Depot** ({stop['lat']}, {stop['lon']})")
+            #     else:
+            #         st.markdown(f"**{idx}. {stop['id']}** — {stop.get('address','')}")
+            #         # arrival ETA if available
+            #         if idx-1 < len(plan.get("etas",[])):
+            #             st.caption(f"ETA: {plan['etas'][idx-1]}")
+            # st.subheader("Map View")
+            # try:
+            #     m = folium.Map(location=[start_lat, start_lon], zoom_start=11)
+            #     folium.Marker([start_lat, start_lon], tooltip="Depot", icon=folium.Icon(color="green")).add_to(m)
+            #     for stop in plan["stops"]:
+            #         if stop.get("id") == "START": continue
+            #         folium.Marker([stop["lat"], stop["lon"]], tooltip=f"{stop['id']}").add_to(m)
+            #     st_folium(m, width=700, height=500)
+            # except Exception as e:
+            #     st.error("Map rendering requires streamlit-folium or folium installed.")
+            # st.subheader("Agent Actions")
+            # if st.button("Request Reroute (send reason)"):
+            #     st.success("Reroute request submitted to operator (demo)")
+            # if st.button("Mark current stop as delivered"):
+            #     st.success("Marked as delivered (demo)")
 
 
 with st.sidebar:

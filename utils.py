@@ -19,7 +19,7 @@ def display_dict_in_streamlit_nested(data_dict: dict, indent: int = 2):
         return
 
     format_list = ["Json", "Dict", "YAML"]
-    format = st.radio("Format", horizontal = True, options = format_list, index = 2, key = data_dict.get(next(iter(data_dict))))
+    format = st.radio("Format", horizontal = True, options = format_list, key = data_dict.get(next(iter(data_dict))))
 
     if format == format_list[0]:
         st.write(data_dict)

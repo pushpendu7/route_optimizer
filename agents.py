@@ -15,7 +15,8 @@ from langchain.chat_models import init_chat_model
 load_dotenv()
 
 
-llm = init_chat_model(model = os.getenv("GROQ_MODEL_NAME"), model_provider = "groq")
+# llm = init_chat_model(model = os.getenv("GROQ_MODEL_NAME"), model_provider = "groq")
+llm = init_chat_model(model = "openai/gpt-oss-20b", model_provider = "groq")
 # llm = init_chat_model(model = os.getenv("GEMINI_MODEL_NAME"), model_provider = "google_genai")
 
 class ClusteringAgent:
@@ -23,7 +24,7 @@ class ClusteringAgent:
         self.deliveries = config.deliveries
         self.coordinates = [(order["lat"], order["lon"]) for order in self.deliveries]
 
-    def cluster_delivery_points_hdbscan_old(self, coordinates, min_cluster_size = 4, eps_km = 5):
+    def cluster_delivery_points_hdbscan_old(self, coordinates, min_cluster_size = 4, eps_km = 15):
         """
         Cluster delivery coordinates using HDBSCAN with Haversine distance.
 
