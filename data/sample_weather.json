@@ -1,9 +1,71 @@
 {
-  "timestamp": "2025-11-04T06:00:00+05:31",
-  "locations": [
-    {"lat":28.6315,"lon":77.2167,"temp_c":22,"conditions":"thunderstorm"},
-    {"lat":28.5703,"lon":77.3240,"temp_c":23,"conditions":"clouds"},
-    {"lat":28.4936,"lon":77.0896,"temp_c":21,"conditions":"rain"},
-    {"lat":28.5682,"lon":77.2378,"temp_c":22,"conditions":"clear"}
-  ]
+    "timestamp": "2025-11-11T04:39:30.837259+05:30",
+    "locations": [
+        {
+            "lat": 22.548455,
+            "lon": 88.359956,
+            "temp_c": 25,
+            "conditions": "clouds"
+        },
+        {
+            "lat": 22.548743,
+            "lon": 88.363235,
+            "temp_c": 28,
+            "conditions": "rain"
+        },
+        {
+            "lat": 22.612974,
+            "lon": 88.344847,
+            "temp_c": 32,
+            "conditions": "thunderstorm"
+        },
+        {
+            "lat": 22.631604,
+            "lon": 88.439831,
+            "temp_c": 30,
+            "conditions": "clear"
+        },
+        {
+            "lat": 22.579573,
+            "lon": 88.37058,
+            "temp_c": 27,
+            "conditions": "clouds"
+        },
+        {
+            "lat": 22.613296,
+            "lon": 88.443769,
+            "temp_c": 28,
+            "conditions": "clouds"
+        },
+        {
+            "lat": 22.594051,
+            "lon": 88.368881,
+            "temp_c": 21,
+            "conditions": "haze"
+        },
+        {
+            "lat": 22.602422,
+            "lon": 88.375596,
+            "temp_c": 23,
+            "conditions": "thunderstorm"
+        },
+        {
+            "lat": 22.570057,
+            "lon": 88.413227,
+            "temp_c": 18,
+            "conditions": "thunderstorm"
+        },
+        {
+            "lat": 22.510354,
+            "lon": 88.372622,
+            "temp_c": 28,
+            "conditions": "rain"
+        },
+        {
+            "lat": 22.539717,
+            "lon": 88.441279,
+            "temp_c": 18,
+            "conditions": "clouds"
+        }
+    ]
 }

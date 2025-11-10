@@ -6,10 +6,10 @@ import config
 import hdbscan
 import numpy as np
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
 from api_clients import get_weather_for_point
 from routing_client import route_between_points
 from langchain.chat_models import init_chat_model
+from datetime import datetime, timedelta, timezone
 from models import load_model, train_and_save_model
 load_dotenv()
 
@@ -236,7 +236,9 @@ class MonitorAgent:
         if self.weather_feed:
             for loc in self.weather_feed.get("locations", []):
                 if "rain" in loc.get("conditions","").lower():
-                    events.append({"type":"weather", "lat":loc["lat"], "lon":loc["lon"], "severity":"medium"})
+                    events.append({"type":"weather", "condition": "🌧️" + loc.get("conditions",""), "lat":loc["lat"], "lon":loc["lon"], "severity":"medium"})
+                elif "thunderstorm" in loc.get("conditions","").lower():
+                    events.append({"type":"weather", "condition": "⛈️" + loc.get("conditions",""), "lat":loc["lat"], "lon":loc["lon"], "severity":"high"})
         return events
 
 
@@ -346,3 +348,30 @@ class DataGeneratorAgent:
         
         # return orders
 
+    def generate_weather_data(self, coords):
+            """
+            Generate synthetic weather data for given coordinates.
+            """
+            # Define realistic weather conditions and temperature ranges
+            conditions_list = ["clear", "clouds", "rain", "thunderstorm", "haze"]
+            temp_range = (18, 35)
+
+            weather_locations = []
+            for c in coords:
+                weather_locations.append({
+                    "lat": c["lat"],
+                    "lon": c["lon"],
+                    "temp_c": random.randint(*temp_range),
+                    "conditions": random.choice(conditions_list)
+                })
+
+            # Current timestamp in ISO format (with timezone)
+            ist_offset = timedelta(hours = 5, minutes = 30)
+            timestamp = datetime.now(timezone(ist_offset)).isoformat()
+
+            weather_data = {
+                "timestamp": timestamp,
+                "locations": weather_locations
+            }
+            with open(config.WEATHER_FILE, 'w') as file:
+                json.dump(weather_data, file, indent = 4)

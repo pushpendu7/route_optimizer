@@ -159,7 +159,7 @@ try:
 
             df = pd.DataFrame(config.load_json(config.DELIVERIES_FILE))
 
-            st.subheader(f":blue[Total {len(df)} Deliveries by {len(clusters.items())} Cluster Zone]")
+            st.subheader(f":blue[Total {len(df)} Deliveries by {len(clusters.items())} Cluster Zone]", anchor = False)
 
             for cluster_id, cluster_deliveries in clusters.items():
                 st.markdown(f"##### 🚚 {cluster_id} :grey[({len(cluster_deliveries)} deliveries)]", width = "content")
@@ -229,7 +229,7 @@ try:
                             st_folium(zone_map, width = 600, height = 400)
                             st.caption(":grey[Priorities:]  High = 🔴 Red | Medium = 🟠 Orange | Low = 🟢 Green", width = "content")
                             
-                            operator_instructions = st.text_area(":grey[Operator Instructions]", value = "Deliver high-priority first; avoid highways if heavy rain.")
+                            operator_instructions = st.text_area(":grey[Operator Instructions]", key = f"operator_instruction_{zone}", value = "Deliver high-priority first; avoid highways if heavy rain.")
 
                             if st.button("Optimized Route Plan", key = f"create_plan_{zone}"):
                                 ordered_ids = planner.prioritize(zone_orders, operator_instructions)
@@ -346,23 +346,26 @@ try:
                                 st.toast("SUCCESS: Override applied", icon = ":material/thumb_up:")
                                 st.rerun()
 
-                        st.subheader("Pending Orders", divider = "grey")
+                        st.subheader("Pending Orders", divider = "grey", anchor = False)
                         st.dataframe(pd.DataFrame(zone_orders), width = "content", hide_index = True)
 
-                        st.subheader("Monitor Consitions & Auto-Reroute", divider = "grey")
+                        st.subheader("Monitor Consitions & Auto-Reroute", divider = "grey", anchor = False)
                         with st.container(horizontal = True, border = True):
                             with st.container():
                                 st.subheader("🚦Live Traffic Feed", divider = "rainbow")
                                 utils.st.dataframe(utils.get_traffic_data(traffic_feed), width = "content", hide_index = True)
                             
                             with st.container():
-                                st.subheader("🌤️ Live Weather Feed", divider = "rainbow")
-                                utils.st.dataframe(utils.get_weather_data(weather_feed), width = "content", hide_index = True)
+                                st.subheader("🌤️ Live Weather Feed", divider = "rainbow", anchor = False)
+                                utils.st.dataframe(utils.get_weather_data(config.load_json(config.WEATHER_FILE)), width = "content", hide_index = True)
+                                if st.button(":material/refresh:", help = "Refresh weather data", key = f"weather_refresh_{zone}"):
+                                    data_generator.generate_weather_data(config.load_json(config.DELIVERIES_FILE))
+                                    st.rerun()
 
                             events = monitor.evaluate()
 
-                            with st.container(border = True):
-                                st.markdown("#### 🚨 Detected Events")
+                            with st.container(border = True, height = 500):
+                                st.markdown(f"#### 🚨 Detected Events ({len(events)})")
                                 severity_color = {
                                                     "high": "red",
                                                     "medium": "orange",
@@ -374,22 +377,23 @@ try:
                                     color = severity_color.get(sev, "gray")
 
                                     # Base event header
-                                    st.markdown(f"**:blue[Event {i}]**", unsafe_allow_html = True)
 
                                     # Event details
                                     if e["type"] == "traffic":
+                                        st.markdown(f"**:blue[Event {i}]** - {e['type'].title()}", unsafe_allow_html = True)
+
                                         st.markdown(
                                             f"""
-                                            - **:grey[Type:]** Traffic  
                                             - **:grey[Segment:]** `{e.get('segment', 'N/A')}`  
                                             - **:grey[Severity:]** :{color}[{sev.capitalize()}]
                                             """,
                                             unsafe_allow_html=True
                                         )
                                     elif e["type"] == "weather":
+                                        st.markdown(f"**:blue[Event {i}]** - {e['type'].title()}", unsafe_allow_html = True)
                                         st.markdown(
                                             f"""
-                                            - **:grey[Type:]** Weather  
+                                            - **:grey[Condition:]** {e.get('condition').title()}
                                             - **:grey[Location:]** ({e.get('lat')}, {e.get('lon')})  
                                             - **:grey[Severity:]** :{color}[{sev.capitalize()}]
                                             """,
@@ -485,7 +489,7 @@ try:
 # ROLE: Delivery Agent
     else:
         st.header("Delivery Agent Dashboard")
-        st.subheader("Assigned Route")
+        st.subheader("Assigned Route", anchor = False)
         if len(st.session_state["route_plans"]) == 0:
             st.info("No plan yet — Operator must generate a plan.")
 
@@ -520,7 +524,7 @@ try:
                                         st.caption(f"ETA: {datetime.fromisoformat(plan['etas'][idx-1]).strftime('%B %d, %Y %I:%M:%S %p')}", width = "content")
                         
                         with st.container(horizontal_alignment = "center"):
-                            st.subheader("Map View", width = "content")
+                            st.subheader("Map View", width = "content", anchor = False)
                             try:
                                 start_lat, start_lon = plan["stops"][0]["lat"], plan["stops"][0]["lon"]
                                 agent_map = folium.Map(location = [start_lat, start_lon], zoom_start = 12)
