@@ -1,17 +1,16 @@
 import os
 import re
+import json
 import random
 import config
-import json
-import numpy as np
 import hdbscan
+import numpy as np
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from api_clients import get_weather_for_point
 from routing_client import route_between_points
-from models import load_model, train_and_save_model
-import numpy as np
-from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+from models import load_model, train_and_save_model
 load_dotenv()
 
 
@@ -118,7 +117,7 @@ class PlannerAgent:
     def __init__(self, model="gpt-4o"):
         self.model = model
 
-    def prioritize(self, deliveries, operator_instructions=""):
+    def prioritize(self, deliveries, operator_instructions = ""):
         """
         deliveries: list of dicts with keys id, priority, address, lat, lon
         operator_instructions: string with additional constraints
@@ -129,7 +128,7 @@ class PlannerAgent:
         prompt += f"Operator instructions: {operator_instructions}\n\nDeliveries:\n"
         for d in deliveries:
             prompt += f"- id:{d['id']}, priority:{d.get('priority','medium')}, lat:{d['lat']}, lon:{d['lon']}, package_size:{d.get('package_size','medium')}\n"
-        prompt += "\nReturn a JSON array of ids in preferred visit order."
+        prompt += "\nReturn a JSON array of ids in optimized visit order."
         try:
             print("Invoking LLM")
             resp = llm.invoke([{"role":"user","content":prompt}])
@@ -248,7 +247,7 @@ class DispatcherAgent:
     def __init__(self):
         self.overrides = []
 
-    def apply_override(self, plan, override):
+    def apply_override_single(self, plan, override):
         """
         override: dict with type 'reorder' or 'skip' or 'insert' and relevant data
         Example: {"type":"reorder","new_order":["D002","D001","D003"]}
@@ -261,7 +260,38 @@ class DispatcherAgent:
             plan['stops'] = [plan['stops'][0]] + new_stops
         elif override["type"] == "skip":
             # remove a stop
-            plan['stops'] = [s for s in plan['stops'] if s.get('id') != override["id"]]
+            # plan['stops'] = [s for s in plan['stops'] if s.get('id') != override["id"]]
+            skip_ids = set(override.get("ids", []))
+            plan['stops'] = [s for s in plan['stops'] if s.get('id') not in skip_ids]
+        return plan
+    
+
+    def apply_override(self, plan, override):
+        """
+        Apply reordering and skipping to a delivery plan.
+
+        override: dict with optional keys:
+            {
+                "new_order": ["D002", "D001", "D003"],
+                "skip": ["D005", "D007"]
+            }
+
+        - If 'new_order' is provided, stops will be reordered accordingly.
+        - If 'skip' is provided, specified stops will be removed.
+        """
+        self.overrides.append(override)
+
+        # --- Reorder stops if provided ---
+        if "new_order" in override and override["new_order"]:
+            id_to_stop = {s["id"]: s for s in plan["stops"] if s.get("id") != "START"}
+            new_stops = [id_to_stop[i] for i in override["new_order"] if i in id_to_stop]
+            plan["stops"] = [plan["stops"][0]] + new_stops
+
+        # --- Skip stops if provided ---
+        if "skip" in override and override["skip"]:
+            skip_ids = set(override["skip"])
+            plan["stops"] = [s for s in plan["stops"] if s.get("id") not in skip_ids]
+
         return plan
 
 

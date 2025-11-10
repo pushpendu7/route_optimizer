@@ -1,13 +1,13 @@
+import math
 import json
+import folium
 import random
 import numpy as np
-import streamlit as st
 import pandas as pd
-from datetime import datetime
 import pydeck as pdk
-import math
-import folium
+import streamlit as st
 from folium import plugins
+from datetime import datetime
 from streamlit_folium import st_folium
 
 
@@ -234,7 +234,7 @@ def assign_nearest_depot_to_clusters(clusters, depots):
 
 
 
-def json_to_table(json_data):
+def get_traffic_data(json_data):
     """
     Convert the traffic segment JSON data into a tabular (DataFrame) format.
     
@@ -270,6 +270,29 @@ def json_to_table(json_data):
     df = pd.DataFrame(records)
     return df
 
+
+def get_weather_data(data):
+    """
+    Converts a weather JSON structure to a pandas DataFrame.
+
+    Example input:
+    {
+        "timestamp": "2025-11-04T06:00:00+05:31",
+        "locations": [
+            {"lat": 28.6315, "lon": 77.2167, "temp_c": 22, "conditions": "thunderstorm"},
+            {"lat": 28.5703, "lon": 77.324, "temp_c": 23, "conditions": "clouds"},
+            {"lat": 28.4936, "lon": 77.0896, "temp_c": 21, "conditions": "rain"},
+            {"lat": 28.5682, "lon": 77.2378, "temp_c": 22, "conditions": "clear"}
+        ]
+    }
+    """
+    # Convert list of locations to DataFrame
+    df = pd.DataFrame(data["locations"])
+
+    # Add timestamp column
+    df["timestamp"] = data["timestamp"]
+
+    return df
 
 def visualize_clusters_on_map(coordinates, cluster_labels):
     """
