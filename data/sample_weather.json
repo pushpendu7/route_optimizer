@@ -1,71 +1,71 @@
 {
-    "timestamp": "2025-11-11T04:39:30.837259+05:30",
+    "timestamp": "2025-11-11T04:43:41.373643+05:30",
     "locations": [
         {
             "lat": 22.548455,
             "lon": 88.359956,
-            "temp_c": 25,
+            "temp_c": 21,
             "conditions": "clouds"
         },
         {
             "lat": 22.548743,
             "lon": 88.363235,
-            "temp_c": 28,
-            "conditions": "rain"
+            "temp_c": 35,
+            "conditions": "clouds"
         },
         {
             "lat": 22.612974,
             "lon": 88.344847,
-            "temp_c": 32,
-            "conditions": "thunderstorm"
+            "temp_c": 30,
+            "conditions": "clouds"
         },
         {
             "lat": 22.631604,
             "lon": 88.439831,
-            "temp_c": 30,
-            "conditions": "clear"
+            "temp_c": 35,
+            "conditions": "thunderstorm"
         },
         {
             "lat": 22.579573,
             "lon": 88.37058,
-            "temp_c": 27,
-            "conditions": "clouds"
+            "temp_c": 25,
+            "conditions": "thunderstorm"
         },
         {
             "lat": 22.613296,
             "lon": 88.443769,
-            "temp_c": 28,
-            "conditions": "clouds"
+            "temp_c": 19,
+            "conditions": "haze"
         },
         {
             "lat": 22.594051,
             "lon": 88.368881,
-            "temp_c": 21,
-            "conditions": "haze"
+            "temp_c": 26,
+            "conditions": "rain"
         },
         {
             "lat": 22.602422,
             "lon": 88.375596,
-            "temp_c": 23,
-            "conditions": "thunderstorm"
+            "temp_c": 27,
+            "conditions": "clear"
         },
         {
             "lat": 22.570057,
             "lon": 88.413227,
-            "temp_c": 18,
-            "conditions": "thunderstorm"
+            "temp_c": 20,
+            "conditions": "clouds"
         },
         {
             "lat": 22.510354,
             "lon": 88.372622,
-            "temp_c": 28,
-            "conditions": "rain"
+            "temp_c": 34,
+            "conditions": "haze"
         },
         {
             "lat": 22.539717,
             "lon": 88.441279,
-            "temp_c": 18,
-            "conditions": "clouds"
+            "temp_c": 28,
+            "conditions": "clear"
         }
     ]
 }

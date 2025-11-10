@@ -354,7 +354,8 @@ try:
                             with st.container():
                                 st.subheader("🚦Live Traffic Feed", divider = "rainbow")
                                 utils.st.dataframe(utils.get_traffic_data(traffic_feed), width = "content", hide_index = True)
-                            
+                                if st.button(":material/refresh:", help = "Refresh traffic data", key = f"traffic_refresh_{zone}"):
+                                    ...
                             with st.container():
                                 st.subheader("🌤️ Live Weather Feed", divider = "rainbow", anchor = False)
                                 utils.st.dataframe(utils.get_weather_data(config.load_json(config.WEATHER_FILE)), width = "content", hide_index = True)
