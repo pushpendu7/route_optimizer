@@ -73,7 +73,7 @@ area = st.sidebar.selectbox("Location", options = config.locations.keys())
 clusterer = ClusteringAgent()
 planner = PlannerAgent()
 optimizer = OptimizerAgent()
-monitor = MonitorAgent(traffic_feed = traffic_feed, weather_feed = weather_feed)
+monitor = MonitorAgent(traffic_feed = config.load_json(config.TRAFFIC_FILE), weather_feed = config.load_json(config.WEATHER_FILE))
 dispatcher = DispatcherAgent()
 data_generator = DataGeneratorAgent()
 
@@ -347,21 +347,25 @@ try:
                                 st.rerun()
 
                         st.subheader("Pending Orders", divider = "grey", anchor = False)
-                        st.dataframe(pd.DataFrame(zone_orders), width = "content", hide_index = True)
+                        st.dataframe(pd.DataFrame(zone_orders), hide_index = True)
 
-                        st.subheader("Monitor Consitions & Auto-Reroute", divider = "grey", anchor = False)
+                        st.subheader("Monitor Conditions & Auto-Reroute", divider = "grey", anchor = False)
                         with st.container(horizontal = True, border = True):
                             with st.container():
-                                st.subheader("🚦Live Traffic Feed", divider = "rainbow")
+                                with st.container(horizontal = True, vertical_alignment = "bottom"):
+                                    st.subheader("🚦Live Traffic Feed", divider = "rainbow", anchor = False)
+                                    if st.button(":material/refresh:", help = "Refresh traffic data", key = f"traffic_refresh_{zone}"):
+                                        ...
                                 utils.st.dataframe(utils.get_traffic_data(traffic_feed), width = "content", hide_index = True)
-                                if st.button(":material/refresh:", help = "Refresh traffic data", key = f"traffic_refresh_{zone}"):
-                                    ...
+                                
                             with st.container():
-                                st.subheader("🌤️ Live Weather Feed", divider = "rainbow", anchor = False)
+                                with st.container(horizontal = True, vertical_alignment = "bottom"):
+                                    st.subheader("🌤️ Live Weather Feed", divider = "rainbow", anchor = False)
+                                    if st.button(":material/refresh:", help = "Refresh weather data", key = f"weather_refresh_{zone}"):
+                                        data_generator.generate_weather_data(config.load_json(config.DELIVERIES_FILE))
+                                        st.rerun()
                                 utils.st.dataframe(utils.get_weather_data(config.load_json(config.WEATHER_FILE)), width = "content", hide_index = True)
-                                if st.button(":material/refresh:", help = "Refresh weather data", key = f"weather_refresh_{zone}"):
-                                    data_generator.generate_weather_data(config.load_json(config.DELIVERIES_FILE))
-                                    st.rerun()
+                                
 
                             events = monitor.evaluate()
 
@@ -510,22 +514,23 @@ try:
                         with st.container(horizontal_alignment = "center"):
                             plan = st.session_state[agent_route_plan]
                             st.markdown(f"#### :grey[Delivery Sequence ({len(plan['stops'])-1} orders)]", width = "content")
-                            for idx, stop in enumerate(plan["stops"]):
-                                if stop.get("id") == "START":
-                                    st.markdown(f"**:grey[START]: Depot**", width = "content")
-                                else:
-                                    st.markdown(":grey[:material/arrow_downward:]", width = "content")
-                                    st.markdown(f"**:blue[Stop {idx}:] ID: {stop['id']}** — :grey[Address:] {stop.get('address','')}", width = "content")
-                                    # st.markdown(f"**:grey[Stop {idx}:] Order ID: {stop['id']}** — :grey[Address:] {stop.get('address', '')}<br>"
-                                    #     f"{'*:grey[ETA: ' + str(plan['etas'][idx-1]) + ']*' if idx-1 < len(plan.get('etas', [])) else ''}",
-                                    #     unsafe_allow_html = True, width = "content")
-                                    
-                                    # Arrival ETA if available
-                                    if idx-1 < len(plan.get("etas",[])):
-                                        st.caption(f"ETA: {datetime.fromisoformat(plan['etas'][idx-1]).strftime('%B %d, %Y %I:%M:%S %p')}", width = "content")
+                            with st.container(border = True, horizontal_alignment = "center", vertical_alignment = "center"):
+                                for idx, stop in enumerate(plan["stops"]):
+                                    if stop.get("id") == "START":
+                                        st.markdown(f"**:grey[START:] Depot**", width = "content")
+                                    else:
+                                        st.markdown(":grey[:material/arrow_downward:]", width = "content")
+                                        st.markdown(f"**:blue[Stop {idx}:] ID: {stop['id']}** — :grey[Address:] {stop.get('address','')}", width = "content")
+                                        # st.markdown(f"**:grey[Stop {idx}:] Order ID: {stop['id']}** — :grey[Address:] {stop.get('address', '')}<br>"
+                                        #     f"{'*:grey[ETA: ' + str(plan['etas'][idx-1]) + ']*' if idx-1 < len(plan.get('etas', [])) else ''}",
+                                        #     unsafe_allow_html = True, width = "content")
+                                        
+                                        # Arrival ETA if available
+                                        if idx-1 < len(plan.get("etas",[])):
+                                            st.caption(f"ETA: {datetime.fromisoformat(plan['etas'][idx-1]).strftime('%B %d, %Y %I:%M:%S %p')}", width = "content")
                         
                         with st.container(horizontal_alignment = "center"):
-                            st.subheader("Map View", width = "content", anchor = False)
+                            st.markdown("#### :grey[Map View]", width = "content")
                             try:
                                 start_lat, start_lon = plan["stops"][0]["lat"], plan["stops"][0]["lon"]
                                 agent_map = folium.Map(location = [start_lat, start_lon], zoom_start = 12)

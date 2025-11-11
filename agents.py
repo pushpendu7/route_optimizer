@@ -124,10 +124,12 @@ class PlannerAgent:
         Returns: ordered list of delivery ids
         """
         # Build a short prompt with deliveries summary
-        prompt = "You are an operations planner. Rank deliveries with ids and reasons based on priority, location proximity and operator instructions.\n"
+        # prompt = "You are an operations planner. Rank deliveries with ids and reasons based on priority, location proximity and operator instructions.\n"
+        prompt = "You are an operations planner. Rank deliveries based on location proximity and operator instructions. Provide the shortest route possible.\n"
         prompt += f"Operator instructions: {operator_instructions}\n\nDeliveries:\n"
         for d in deliveries:
-            prompt += f"- id:{d['id']}, priority:{d.get('priority','medium')}, lat:{d['lat']}, lon:{d['lon']}, package_size:{d.get('package_size','medium')}\n"
+            # prompt += f"- id:{d['id']}, priority:{d.get('priority','medium')}, lat:{d['lat']}, lon:{d['lon']}, package_size:{d.get('package_size','medium')}\n"
+            prompt += f"- id:{d['id']}, lat:{d['lat']}, lon:{d['lon']}, package_size:{d.get('package_size','medium')}\n"
         prompt += "\nReturn a JSON array of ids in optimized visit order."
         try:
             print("Invoking LLM")
@@ -219,7 +221,7 @@ class MonitorAgent:
     Polls weather/traffic feeds and raises alerts for the optimizer to replan.
     For demo: it reads from sample JSON (or from API clients).
     """
-    def __init__(self, traffic_feed=None, weather_feed=None):
+    def __init__(self, traffic_feed = None, weather_feed = None):
         self.traffic_feed = traffic_feed
         self.weather_feed = weather_feed
 
