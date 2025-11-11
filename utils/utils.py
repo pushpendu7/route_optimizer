@@ -4,18 +4,30 @@ import folium
 import random
 import numpy as np
 import pandas as pd
-import pydeck as pdk
 import streamlit as st
-from folium import plugins
+from pathlib import Path
+from config import config
 from datetime import datetime
 from streamlit_folium import st_folium
+
+
+def load_json(path):
+    with open(path, "r", encoding = "utf-8") as f:
+        return json.load(f)
+
+
+def apply_css(file):
+    CSS_FILE = Path(config.CSS_DIR, file)
+    with open(CSS_FILE) as f:
+        css = f.read()
+    st.markdown(f'<style>{css}</style>', unsafe_allow_html = True)
 
 
 def display_dict_in_streamlit_nested(data_dict: dict, indent: int = 2):
     """Display a dictionary (including nested ones) in a nicely formatted way in Streamlit."""
 
     if not data_dict:
-        st.write("The dictionary is empty.")
+        st.write("*:grey[(The dictionary is empty)]*")
         return
 
     format_list = ["Json", "Dict", "YAML"]

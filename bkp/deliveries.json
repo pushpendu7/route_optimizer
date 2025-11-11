@@ -1,0 +1,112 @@
+[
+    {
+        "id": "ORD001",
+        "customer_name": "Rohit Kumar",
+        "address": "12, Sector 5, Salt Lake City, Kolkata",
+        "lat": 22.566929,
+        "lon": 88.393484,
+        "priority": "high",
+        "package_size": "medium",
+        "fragile": true
+    },
+    {
+        "id": "ORD002",
+        "customer_name": "Anjali Banerjee",
+        "address": "8, Sector 6, Salt Lake City, Kolkata",
+        "lat": 22.584715,
+        "lon": 88.421146,
+        "priority": "medium",
+        "package_size": "large",
+        "fragile": false
+    },
+    {
+        "id": "ORD003",
+        "customer_name": "Suman Roy",
+        "address": "23, Jadavpur Road, Jadavpur, Kolkata",
+        "lat": 22.628965,
+        "lon": 88.35594,
+        "priority": "low",
+        "package_size": "small",
+        "fragile": false
+    },
+    {
+        "id": "ORD004",
+        "customer_name": "Priya Mukherjee",
+        "address": "5, Jadavpur, Kolkata",
+        "lat": 22.627258,
+        "lon": 88.382319,
+        "priority": "high",
+        "package_size": "medium",
+        "fragile": true
+    },
+    {
+        "id": "ORD005",
+        "customer_name": "Rahul Ghosh",
+        "address": "17, Sector 4, New Town, Kolkata",
+        "lat": 22.534815,
+        "lon": 88.393479,
+        "priority": "medium",
+        "package_size": "large",
+        "fragile": false
+    },
+    {
+        "id": "ORD006",
+        "customer_name": "Shreya Das",
+        "address": "9, Sector 5, New Town, Kolkata",
+        "lat": 22.529959,
+        "lon": 88.420789,
+        "priority": "low",
+        "package_size": "small",
+        "fragile": true
+    },
+    {
+        "id": "ORD007",
+        "customer_name": "Amitabh Sengupta",
+        "address": "4, Sector 3, Salt Lake City, Kolkata",
+        "lat": 22.604697,
+        "lon": 88.357318,
+        "priority": "high",
+        "package_size": "medium",
+        "fragile": false
+    },
+    {
+        "id": "ORD008",
+        "customer_name": "Meera Chatterjee",
+        "address": "21, Sector 8, Salt Lake City, Kolkata",
+        "lat": 22.635917,
+        "lon": 88.343424,
+        "priority": "medium",
+        "package_size": "large",
+        "fragile": true
+    },
+    {
+        "id": "ORD009",
+        "customer_name": "Kunal Saha",
+        "address": "3, Sector 7, Salt Lake City, Kolkata",
+        "lat": 22.544674,
+        "lon": 88.448182,
+        "priority": "low",
+        "package_size": "small",
+        "fragile": false
+    },
+    {
+        "id": "ORD010",
+        "customer_name": "Nandita Roy",
+        "address": "15, Sector 2, Salt Lake City, Kolkata",
+        "lat": 22.600646,
+        "lon": 88.382209,
+        "priority": "high",
+        "package_size": "medium",
+        "fragile": true
+    },
+    {
+        "id": "ORD011",
+        "customer_name": "Subhankar Sen",
+        "address": "7, Sector 6, Salt Lake City, Kolkata",
+        "lat": 22.633881,
+        "lon": 88.413773,
+        "priority": "medium",
+        "package_size": "large",
+        "fragile": false
+    }
+]

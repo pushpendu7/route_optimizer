@@ -2,9 +2,11 @@ import os
 import re
 import json
 import random
-import config
 import hdbscan
 import numpy as np
+from utils import utils
+from pathlib import Path
+from config import config
 from dotenv import load_dotenv
 from api_clients import get_weather_for_point
 from routing_client import route_between_points
@@ -19,9 +21,10 @@ llm = init_chat_model(model = "openai/gpt-oss-20b", model_provider = "groq")
 # llm = init_chat_model(model = os.getenv("GEMINI_MODEL_NAME"), model_provider = "google_genai")
 
 class ClusteringAgent:
-    def __init__(self):
-        self.deliveries = config.deliveries
-        self.coordinates = [(order["lat"], order["lon"]) for order in self.deliveries]
+    def __init__(self, location):
+        self.deliveries = utils.load_json(config.DELIVERIES_FILE)
+        self.location = location
+        # self.coordinates = [(order["lat"], order["lon"]) for order in self.deliveries[self.location]]
 
     def cluster_delivery_points_hdbscan_old(self, coordinates, min_cluster_size = 4, eps_km = 15):
         """
@@ -163,7 +166,7 @@ class OptimizerAgent:
     """
     Generates route plans using routing_client; uses travel-time model if present to refine durations.
     """
-    def __init__(self, travel_time_model_path="travel_time_model.pkl"):
+    def __init__(self, travel_time_model_path = Path(config.MODEL_DIR, "travel_time_model.pkl")):
         self.model = None
         if os.path.exists(travel_time_model_path):
             try:
@@ -325,7 +328,7 @@ class DataGeneratorAgent:
             f"Use realistic Bengali or Indian names and real street/locality-style addresses in {location}."
             "Priorities should be 'high', 'medium', or 'low'. Package sizes: 'small', 'medium', 'large'."
             "Fragile is true or false. "
-            "Return JSON only as string."
+            "Return JSON only."
         )
 
         # Step 3: Combine lat/lon into the prompt
@@ -339,10 +342,40 @@ class DataGeneratorAgent:
 
         # Step 5: Parse and return structured JSON
         try:
-            orders = json.loads(response.content)
-            with open(config.DELIVERIES_FILE, 'w') as file:
-                json.dump(orders, file, indent = 4)
+            # orders = json.loads([{location : response.content}])
+            # with open(config.DELIVERIES_FILE, 'w') as file:
+            #     json.dump(orders, file, indent = 4)
 
+
+            match = re.search(r'\[\s*\{.*\}\s*\]', response.content, re.DOTALL)
+            if not match:
+                print("⚠️ No valid JSON array found in LLM output.")
+                print(response.content)
+                return []
+
+            new_orders = json.loads(match.group(0))  # Parse only the list portion
+
+            # new_orders = json.loads(response.content)
+            if not isinstance(new_orders, list):
+                print("⚠️ Expected a list of orders from LLM.")
+                return []
+
+            # Load existing data
+            if os.path.exists(config.DELIVERIES_FILE):
+                with open(config.DELIVERIES_FILE, "r") as f:
+                    deliveries = json.load(f)
+            else:
+                deliveries = {}
+
+            # Append or create new key
+            deliveries[location] = new_orders
+
+            # Save back to file
+            with open(config.DELIVERIES_FILE, "w") as f:
+                json.dump(deliveries, f, indent = 4)
+
+            return new_orders
+        
         except json.JSONDecodeError:
             print("⚠️ Could not parse JSON. Raw LLM output:")
             print(response.content)

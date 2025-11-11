@@ -1,0 +1,44 @@
+/* App Image */
+.st-emotion-cache-13gev4o {
+    display: block;
+    margin: auto;
+}
+
+/* Page Header */
+.st-emotion-cache-1w4gzkv h2 {
+    text-align: center;
+    /* color: #337def; */
+}
+
+/* App Name */
+.st-emotion-cache-1w4gzkv h3 {
+    text-align: center;
+    font-size: 24px;
+    /* color: #337def; */
+}
+
+/* App Description */
+.st-emotion-cache-467cry span {
+    text-align: center;
+    font-size: 16px;
+    color: darkgray;
+}
+
+/* Launch Button */
+.stButton {
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+/* Anchors in App Name Headers */
+.st-emotion-cache-ubko3j {
+    display: none;
+}
+
+/* App Image Expand Button */
+.st-emotion-cache-1ir142p {
+    display: none;
+}

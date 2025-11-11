@@ -1,142 +1,290 @@
-[
-    {
-        "id": 1,
-        "customer_name": "Rahul Kumar",
-        "address": "Flat 3, 12, Sector 5, Salt Lake, Kolkata-700064",
-        "lat": 22.580089,
-        "lon": 88.414867,
-        "priority": "high",
-        "package_size": "small",
-        "fragile": true
-    },
-    {
-        "id": 2,
-        "customer_name": "Ayesha Banerjee",
-        "address": "Flat 5, 17, Jadavpur, Kolkata-700029",
-        "lat": 22.503801,
-        "lon": 88.359253,
-        "priority": "medium",
-        "package_size": "medium",
-        "fragile": false
-    },
-    {
-        "id": 3,
-        "customer_name": "Sanjay Gupta",
-        "address": "Flat 1, 23, Bhatibari, Kolkata-700029",
-        "lat": 22.53844,
-        "lon": 88.345837,
-        "priority": "low",
-        "package_size": "large",
-        "fragile": true
-    },
-    {
-        "id": 4,
-        "customer_name": "Nandita Roy",
-        "address": "Flat 4, 9, Kalighat, Kolkata-700023",
-        "lat": 22.50727,
-        "lon": 88.428149,
-        "priority": "high",
-        "package_size": "medium",
-        "fragile": false
-    },
-    {
-        "id": 5,
-        "customer_name": "Deepak Mukherjee",
-        "address": "Flat 2, 7, Sector 3, New Town, Kolkata-700156",
-        "lat": 22.597171,
-        "lon": 88.423294,
-        "priority": "medium",
-        "package_size": "small",
-        "fragile": true
-    },
-    {
-        "id": 6,
-        "customer_name": "Mira Sen",
-        "address": "Flat 6, 15, Joka, Kolkata-700156",
-        "lat": 22.551611,
-        "lon": 88.440989,
-        "priority": "low",
-        "package_size": "large",
-        "fragile": false
-    },
-    {
-        "id": 7,
-        "customer_name": "Rohan Chatterjee",
-        "address": "Flat 1, 8, Rajarhat, Kolkata-700156",
-        "lat": 22.634986,
-        "lon": 88.449835,
-        "priority": "high",
-        "package_size": "medium",
-        "fragile": true
-    },
-    {
-        "id": 8,
-        "customer_name": "Kavita Das",
-        "address": "Flat 3, 21, Park Street, Kolkata-700001",
-        "lat": 22.501415,
-        "lon": 88.436016,
-        "priority": "medium",
-        "package_size": "small",
-        "fragile": false
-    },
-    {
-        "id": 9,
-        "customer_name": "Arjun Bose",
-        "address": "Flat 2, 12, Rajarhat, Kolkata-700156",
-        "lat": 22.629303,
-        "lon": 88.449875,
-        "priority": "low",
-        "package_size": "medium",
-        "fragile": true
-    },
-    {
-        "id": 10,
-        "customer_name": "Sonia Nandi",
-        "address": "Flat 5, 14, Bhatibari, Kolkata-700029",
-        "lat": 22.546692,
-        "lon": 88.379078,
-        "priority": "high",
-        "package_size": "large",
-        "fragile": false
-    },
-    {
-        "id": 11,
-        "customer_name": "Kamal Kumar",
-        "address": "Flat 4, 9, Joka, Kolkata-700156",
-        "lat": 22.605617,
-        "lon": 88.383529,
-        "priority": "medium",
-        "package_size": "small",
-        "fragile": true
-    },
-    {
-        "id": 12,
-        "customer_name": "Pooja Banerjee",
-        "address": "Flat 2, 10, Jadavpur, Kolkata-700029",
-        "lat": 22.592444,
-        "lon": 88.374542,
-        "priority": "low",
-        "package_size": "medium",
-        "fragile": false
-    },
-    {
-        "id": 13,
-        "customer_name": "Siddharth Roy",
-        "address": "Flat 1, 7, New Town, Kolkata-700156",
-        "lat": 22.566331,
-        "lon": 88.409101,
-        "priority": "high",
-        "package_size": "large",
-        "fragile": true
-    },
-    {
-        "id": 14,
-        "customer_name": "Leena Ghosh",
-        "address": "Flat 3, 8, Bhatibari, Kolkata-700029",
-        "lat": 22.575792,
-        "lon": 88.34612,
-        "priority": "medium",
-        "package_size": "small",
-        "fragile": false
-    }
-]
+{
+    "Kolkata": [
+        {
+            "id": 1001,
+            "customer_name": "Rahul Sen",
+            "address": "12, D Block, Salt Lake Sector\u20115, Kolkata, West Bengal 700091",
+            "lat": 22.524657,
+            "lon": 88.388768,
+            "priority": "high",
+            "package_size": "medium",
+            "fragile": true
+        },
+        {
+            "id": 1002,
+            "customer_name": "Anjali Bose",
+            "address": "45, G Block, Salt Lake Sector\u20113, Kolkata, West Bengal 700091",
+            "lat": 22.52427,
+            "lon": 88.351247,
+            "priority": "medium",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": 1003,
+            "customer_name": "Sourav Roy",
+            "address": "9, B Block, Salt Lake Sector\u20112, Kolkata, West Bengal 700091",
+            "lat": 22.573025,
+            "lon": 88.351002,
+            "priority": "low",
+            "package_size": "large",
+            "fragile": true
+        },
+        {
+            "id": 1004,
+            "customer_name": "Nandita Mitra",
+            "address": "23, F Block, Salt Lake Sector\u20114, Kolkata, West Bengal 700091",
+            "lat": 22.536893,
+            "lon": 88.376162,
+            "priority": "high",
+            "package_size": "medium",
+            "fragile": false
+        },
+        {
+            "id": 1005,
+            "customer_name": "Kamal Chowdhury",
+            "address": "78, A Block, Salt Lake Sector\u20111, Kolkata, West Bengal 700091",
+            "lat": 22.505382,
+            "lon": 88.342543,
+            "priority": "medium",
+            "package_size": "small",
+            "fragile": true
+        }
+    ],
+    "Bangalore": [
+        {
+            "id": 1,
+            "customer_name": "Arun Kumar",
+            "address": "45, 3rd Cross, Indiranagar 3rd Block, Bangalore",
+            "lat": 13.022426,
+            "lon": 77.631051,
+            "priority": "high",
+            "package_size": "medium",
+            "fragile": true
+        },
+        {
+            "id": 2,
+            "customer_name": "Sneha Patel",
+            "address": "12, 2nd Main, Whitefield, Bangalore",
+            "lat": 13.109564,
+            "lon": 77.548888,
+            "priority": "low",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": 3,
+            "customer_name": "Rohan Bose",
+            "address": "78, 5th Main, Jayanagar 4th Block, Bangalore",
+            "lat": 12.957626,
+            "lon": 77.56809,
+            "priority": "medium",
+            "package_size": "large",
+            "fragile": true
+        },
+        {
+            "id": 4,
+            "customer_name": "Kavita Sharma",
+            "address": "101, 7th Main, HSR Layout, Bangalore",
+            "lat": 13.030912,
+            "lon": 77.694991,
+            "priority": "high",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": 5,
+            "customer_name": "Pooja Sen",
+            "address": "23, 3rd Cross, Kengeri, Bangalore",
+            "lat": 12.908417,
+            "lon": 77.726917,
+            "priority": "low",
+            "package_size": "medium",
+            "fragile": true
+        },
+        {
+            "id": 6,
+            "customer_name": "Sanjay Reddy",
+            "address": "56, 4th Cross, Sarjapur Road, Bangalore",
+            "lat": 13.146107,
+            "lon": 77.467376,
+            "priority": "medium",
+            "package_size": "large",
+            "fragile": false
+        },
+        {
+            "id": 7,
+            "customer_name": "Meera Nair",
+            "address": "19, 8th Main, Indiranagar 5th Block, Bangalore",
+            "lat": 13.047762,
+            "lon": 77.610258,
+            "priority": "high",
+            "package_size": "medium",
+            "fragile": true
+        }
+    ],
+    "Delhi": [
+        {
+            "id": "order_001",
+            "customer_name": "Sourav Sen",
+            "address": "Dwarka Sector 21, Dwarka, New Delhi - 110075",
+            "lat": 28.418976,
+            "lon": 76.846922,
+            "priority": "high",
+            "package_size": "medium",
+            "fragile": true
+        },
+        {
+            "id": "order_002",
+            "customer_name": "Asha Devi",
+            "address": "Rohini Phase III, Rohini, New Delhi - 110085",
+            "lat": 28.483057,
+            "lon": 77.153637,
+            "priority": "medium",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": "order_003",
+            "customer_name": "Rohan Patel",
+            "address": "Sector 4, East Delhi, New Delhi - 110093",
+            "lat": 28.606521,
+            "lon": 77.001208,
+            "priority": "low",
+            "package_size": "large",
+            "fragile": true
+        },
+        {
+            "id": "order_004",
+            "customer_name": "Nandini Das",
+            "address": "Dwarka Sector 14, Dwarka, New Delhi - 110075",
+            "lat": 28.546485,
+            "lon": 76.846209,
+            "priority": "high",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": "order_005",
+            "customer_name": "Arjun Bose",
+            "address": "Ganganagar, New Delhi - 110038",
+            "lat": 28.678747,
+            "lon": 77.137037,
+            "priority": "medium",
+            "package_size": "medium",
+            "fragile": true
+        }
+    ],
+    "Pune": [
+        {
+            "id": 1,
+            "customer_name": "Rohit Sharma",
+            "address": "Kharadi Phase 1, Pune",
+            "lat": 18.507555,
+            "lon": 73.841508,
+            "priority": "high",
+            "package_size": "medium",
+            "fragile": false
+        },
+        {
+            "id": 2,
+            "customer_name": "Anita Deshmukh",
+            "address": "Kalyani Nagar, Pune",
+            "lat": 18.572229,
+            "lon": 73.965143,
+            "priority": "medium",
+            "package_size": "large",
+            "fragile": true
+        },
+        {
+            "id": 3,
+            "customer_name": "Suresh Patil",
+            "address": "Pashan Road, Pune",
+            "lat": 18.473754,
+            "lon": 73.811825,
+            "priority": "low",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": 4,
+            "customer_name": "Sneha Joshi",
+            "address": "Aundh Road, Pune",
+            "lat": 18.468073,
+            "lon": 73.979376,
+            "priority": "medium",
+            "package_size": "medium",
+            "fragile": true
+        },
+        {
+            "id": 5,
+            "customer_name": "Vikas Kulkarni",
+            "address": "Bhosari Industrial Area, Pune",
+            "lat": 18.604313,
+            "lon": 73.772032,
+            "priority": "high",
+            "package_size": "large",
+            "fragile": false
+        },
+        {
+            "id": 6,
+            "customer_name": "Manisha Bhattacharya",
+            "address": "Shivaji Nagar, Pune",
+            "lat": 18.450222,
+            "lon": 73.919639,
+            "priority": "low",
+            "package_size": "small",
+            "fragile": false
+        },
+        {
+            "id": 7,
+            "customer_name": "Rahul Nair",
+            "address": "Kharadi Phase 2, Pune",
+            "lat": 18.55408,
+            "lon": 73.760787,
+            "priority": "medium",
+            "package_size": "medium",
+            "fragile": true
+        },
+        {
+            "id": 8,
+            "customer_name": "Kavita Gupta",
+            "address": "Pune East, Pune",
+            "lat": 18.610916,
+            "lon": 73.85585,
+            "priority": "high",
+            "package_size": "large",
+            "fragile": false
+        },
+        {
+            "id": 9,
+            "customer_name": "Arjun Mehta",
+            "address": "Shivajinagar, Pune",
+            "lat": 18.486522,
+            "lon": 73.921079,
+            "priority": "low",
+            "package_size": "small",
+            "fragile": true
+        },
+        {
+            "id": 10,
+            "customer_name": "Deepika Reddy",
+            "address": "Bhosari, Pune",
+            "lat": 18.601705,
+            "lon": 73.802305,
+            "priority": "medium",
+            "package_size": "medium",
+            "fragile": false
+        },
+        {
+            "id": 11,
+            "customer_name": "Nikhil Joshi",
+            "address": "Kalyani Nagar, Pune",
+            "lat": 18.61062,
+            "lon": 73.969539,
+            "priority": "high",
+            "package_size": "large",
+            "fragile": true
+        }
+    ]
+}
