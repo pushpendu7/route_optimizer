@@ -5,6 +5,7 @@ from utils import utils
 from pathlib import Path
 from config import config
 from streamlit_folium import st_folium
+from models import train_and_save_model
 from agents import ClusteringAgent, DataGeneratorAgent
 
 # Set Page Config
@@ -17,7 +18,9 @@ with st.container(horizontal = True, vertical_alignment = "bottom"):
     st.image(Path(config.ASSETS_DIR, "ordermap.png"), width = 50)
     st.header(":blue[OrderMap]", divider = "rainbow", anchor = False)
 
-
+if st.sidebar.button("Train Travel Time Calculator model"):
+    train_and_save_model()
+    st.sidebar.success("Trained and saved travel_time_model.pkl")
 
 option_container = st.container(horizontal = True, vertical_alignment = "center")
 locations = config.locations

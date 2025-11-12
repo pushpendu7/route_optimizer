@@ -1,5 +1,4 @@
 .env
 .venv
 __pycache__
-travel_time_model.pkl
 *.egg-info

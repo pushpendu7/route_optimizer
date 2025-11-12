@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 import joblib
 import os
+from config import config
+from pathlib import Path
 
 def generate_sample_training_data(n=200):
     """
@@ -25,7 +27,7 @@ def generate_sample_training_data(n=200):
     })
     return df
 
-def train_and_save_model(path="travel_time_model.pkl"):
+def train_and_save_model(path=Path(config.MODEL_DIR, "travel_time_model.pkl")):
     df = generate_sample_training_data(500)
     X = df[["distance_km", "congestion", "precip"]]
     y = df["travel_time_min"]
@@ -35,7 +37,7 @@ def train_and_save_model(path="travel_time_model.pkl"):
     print(f"Saved model to {path}")
     return path
 
-def load_model(path="travel_time_model.pkl"):
+def load_model(path=Path(config.MODEL_DIR, "travel_time_model.pkl")):
     if os.path.exists(path):
         return joblib.load(path)
     else:
