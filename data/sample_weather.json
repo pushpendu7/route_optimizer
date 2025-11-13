@@ -1,71 +1,453 @@
 {
-    "timestamp": "2025-11-12T02:15:48.109514+05:30",
-    "locations": [
-        {
-            "lat": 22.566929,
-            "lon": 88.393484,
-            "temp_c": 25,
-            "conditions": "thunderstorm"
-        },
-        {
-            "lat": 22.584715,
-            "lon": 88.421146,
-            "temp_c": 30,
-            "conditions": "rain"
-        },
-        {
-            "lat": 22.628965,
-            "lon": 88.35594,
-            "temp_c": 27,
-            "conditions": "haze"
-        },
-        {
-            "lat": 22.627258,
-            "lon": 88.382319,
-            "temp_c": 26,
-            "conditions": "haze"
-        },
-        {
-            "lat": 22.534815,
-            "lon": 88.393479,
-            "temp_c": 27,
-            "conditions": "clouds"
-        },
-        {
-            "lat": 22.529959,
-            "lon": 88.420789,
-            "temp_c": 35,
-            "conditions": "thunderstorm"
-        },
-        {
-            "lat": 22.604697,
-            "lon": 88.357318,
-            "temp_c": 27,
-            "conditions": "thunderstorm"
-        },
-        {
-            "lat": 22.635917,
-            "lon": 88.343424,
-            "temp_c": 22,
-            "conditions": "haze"
-        },
-        {
-            "lat": 22.544674,
-            "lon": 88.448182,
-            "temp_c": 31,
-            "conditions": "clouds"
-        },
-        {
-            "lat": 22.600646,
-            "lon": 88.382209,
-            "temp_c": 19,
-            "conditions": "haze"
-        },
-        {
-            "lat": 22.633881,
-            "lon": 88.413773,
-            "temp_c": 21,
-            "conditions": "haze"
-        }
-    ]
+    "Kolkata": {
+        "timestamp": "2025-11-13T14:17:31.456194+05:30",
+        "locations": [
+            {
+                "lat": 22.513037,
+                "lon": 88.409824,
+                "temp_c": 31,
+                "conditions": "haze"
+            },
+            {
+                "lat": 22.608433,
+                "lon": 88.362169,
+                "temp_c": 21,
+                "conditions": "clear"
+            },
+            {
+                "lat": 22.502826,
+                "lon": 88.441582,
+                "temp_c": 19,
+                "conditions": "haze"
+            },
+            {
+                "lat": 22.605342,
+                "lon": 88.35571,
+                "temp_c": 30,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 22.598073,
+                "lon": 88.438702,
+                "temp_c": 19,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 22.573475,
+                "lon": 88.426636,
+                "temp_c": 21,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 22.629963,
+                "lon": 88.440372,
+                "temp_c": 32,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 22.503119,
+                "lon": 88.362555,
+                "temp_c": 25,
+                "conditions": "haze"
+            },
+            {
+                "lat": 22.505952,
+                "lon": 88.340727,
+                "temp_c": 22,
+                "conditions": "clear"
+            },
+            {
+                "lat": 22.570108,
+                "lon": 88.359829,
+                "temp_c": 19,
+                "conditions": "rain"
+            },
+            {
+                "lat": 22.564122,
+                "lon": 88.356333,
+                "temp_c": 31,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 22.609989,
+                "lon": 88.350405,
+                "temp_c": 21,
+                "conditions": "haze"
+            }
+        ]
+    },
+    "Bangalore": {
+        "timestamp": "2025-11-13T14:18:24.959606+05:30",
+        "locations": [
+            {
+                "lat": 13.022426,
+                "lon": 77.631051,
+                "temp_c": 24,
+                "conditions": "haze"
+            },
+            {
+                "lat": 13.109564,
+                "lon": 77.548888,
+                "temp_c": 24,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 12.957626,
+                "lon": 77.56809,
+                "temp_c": 26,
+                "conditions": "clear"
+            },
+            {
+                "lat": 13.030912,
+                "lon": 77.694991,
+                "temp_c": 29,
+                "conditions": "clear"
+            },
+            {
+                "lat": 12.908417,
+                "lon": 77.726917,
+                "temp_c": 25,
+                "conditions": "rain"
+            },
+            {
+                "lat": 13.146107,
+                "lon": 77.467376,
+                "temp_c": 34,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 13.047762,
+                "lon": 77.610258,
+                "temp_c": 21,
+                "conditions": "clouds"
+            }
+        ]
+    },
+    "Delhi": {
+        "timestamp": "2025-11-13T14:11:27.485324+05:30",
+        "locations": [
+            {
+                "lat": 28.418976,
+                "lon": 76.846922,
+                "temp_c": 23,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 28.483057,
+                "lon": 77.153637,
+                "temp_c": 25,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 28.606521,
+                "lon": 77.001208,
+                "temp_c": 31,
+                "conditions": "haze"
+            },
+            {
+                "lat": 28.546485,
+                "lon": 76.846209,
+                "temp_c": 34,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 28.678747,
+                "lon": 77.137037,
+                "temp_c": 18,
+                "conditions": "rain"
+            }
+        ]
+    },
+    "Pune": {
+        "timestamp": "2025-11-13T13:57:52.134179+05:30",
+        "locations": [
+            {
+                "lat": 22.513037,
+                "lon": 88.409824,
+                "temp_c": 24,
+                "conditions": "rain"
+            },
+            {
+                "lat": 22.608433,
+                "lon": 88.362169,
+                "temp_c": 33,
+                "conditions": "rain"
+            },
+            {
+                "lat": 22.502826,
+                "lon": 88.441582,
+                "temp_c": 30,
+                "conditions": "rain"
+            },
+            {
+                "lat": 22.605342,
+                "lon": 88.35571,
+                "temp_c": 24,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 22.598073,
+                "lon": 88.438702,
+                "temp_c": 27,
+                "conditions": "clear"
+            },
+            {
+                "lat": 22.573475,
+                "lon": 88.426636,
+                "temp_c": 31,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 22.629963,
+                "lon": 88.440372,
+                "temp_c": 30,
+                "conditions": "clear"
+            },
+            {
+                "lat": 22.503119,
+                "lon": 88.362555,
+                "temp_c": 27,
+                "conditions": "haze"
+            },
+            {
+                "lat": 22.505952,
+                "lon": 88.340727,
+                "temp_c": 21,
+                "conditions": "clear"
+            },
+            {
+                "lat": 22.570108,
+                "lon": 88.359829,
+                "temp_c": 30,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 22.564122,
+                "lon": 88.356333,
+                "temp_c": 24,
+                "conditions": "haze"
+            },
+            {
+                "lat": 22.609989,
+                "lon": 88.350405,
+                "temp_c": 28,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 13.022426,
+                "lon": 77.631051,
+                "temp_c": 24,
+                "conditions": "rain"
+            },
+            {
+                "lat": 13.109564,
+                "lon": 77.548888,
+                "temp_c": 32,
+                "conditions": "clear"
+            },
+            {
+                "lat": 12.957626,
+                "lon": 77.56809,
+                "temp_c": 21,
+                "conditions": "clear"
+            },
+            {
+                "lat": 13.030912,
+                "lon": 77.694991,
+                "temp_c": 19,
+                "conditions": "haze"
+            },
+            {
+                "lat": 12.908417,
+                "lon": 77.726917,
+                "temp_c": 30,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 13.146107,
+                "lon": 77.467376,
+                "temp_c": 20,
+                "conditions": "rain"
+            },
+            {
+                "lat": 13.047762,
+                "lon": 77.610258,
+                "temp_c": 32,
+                "conditions": "clear"
+            },
+            {
+                "lat": 28.418976,
+                "lon": 76.846922,
+                "temp_c": 25,
+                "conditions": "clear"
+            },
+            {
+                "lat": 28.483057,
+                "lon": 77.153637,
+                "temp_c": 19,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 28.606521,
+                "lon": 77.001208,
+                "temp_c": 19,
+                "conditions": "haze"
+            },
+            {
+                "lat": 28.546485,
+                "lon": 76.846209,
+                "temp_c": 29,
+                "conditions": "haze"
+            },
+            {
+                "lat": 28.678747,
+                "lon": 77.137037,
+                "temp_c": 27,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 18.507555,
+                "lon": 73.841508,
+                "temp_c": 25,
+                "conditions": "haze"
+            },
+            {
+                "lat": 18.572229,
+                "lon": 73.965143,
+                "temp_c": 19,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 18.473754,
+                "lon": 73.811825,
+                "temp_c": 22,
+                "conditions": "haze"
+            },
+            {
+                "lat": 18.468073,
+                "lon": 73.979376,
+                "temp_c": 31,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 18.604313,
+                "lon": 73.772032,
+                "temp_c": 24,
+                "conditions": "haze"
+            },
+            {
+                "lat": 18.450222,
+                "lon": 73.919639,
+                "temp_c": 23,
+                "conditions": "haze"
+            },
+            {
+                "lat": 18.55408,
+                "lon": 73.760787,
+                "temp_c": 29,
+                "conditions": "rain"
+            },
+            {
+                "lat": 18.610916,
+                "lon": 73.85585,
+                "temp_c": 21,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 18.486522,
+                "lon": 73.921079,
+                "temp_c": 28,
+                "conditions": "haze"
+            },
+            {
+                "lat": 18.601705,
+                "lon": 73.802305,
+                "temp_c": 29,
+                "conditions": "rain"
+            },
+            {
+                "lat": 18.61062,
+                "lon": 73.969539,
+                "temp_c": 26,
+                "conditions": "thunderstorm"
+            }
+        ]
+    },
+    "Mumbai": {
+        "timestamp": "2025-11-13T14:24:03.127570+05:30",
+        "locations": [
+            {
+                "lat": 18.91438,
+                "lon": 72.845535,
+                "temp_c": 20,
+                "conditions": "clear"
+            },
+            {
+                "lat": 19.020927,
+                "lon": 72.826934,
+                "temp_c": 21,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 18.90104,
+                "lon": 72.873524,
+                "temp_c": 35,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 19.087737,
+                "lon": 72.811979,
+                "temp_c": 29,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 19.040476,
+                "lon": 72.86012,
+                "temp_c": 19,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 18.887462,
+                "lon": 72.798343,
+                "temp_c": 19,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 18.955455,
+                "lon": 72.87053,
+                "temp_c": 24,
+                "conditions": "clear"
+            },
+            {
+                "lat": 19.241777,
+                "lon": 72.796095,
+                "temp_c": 34,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 19.204333,
+                "lon": 72.820612,
+                "temp_c": 25,
+                "conditions": "clear"
+            },
+            {
+                "lat": 18.941777,
+                "lon": 72.84496,
+                "temp_c": 26,
+                "conditions": "clouds"
+            },
+            {
+                "lat": 18.985494,
+                "lon": 72.853644,
+                "temp_c": 29,
+                "conditions": "thunderstorm"
+            },
+            {
+                "lat": 18.993416,
+                "lon": 72.900402,
+                "temp_c": 19,
+                "conditions": "clouds"
+            }
+        ]
+    }
 }

@@ -383,7 +383,7 @@ class DataGeneratorAgent:
         
         # return orders
 
-    def generate_weather_data(self, coords):
+    def generate_weather_data(self, coords, location):
             """
             Generate synthetic weather data for given coordinates.
             """
@@ -391,6 +391,14 @@ class DataGeneratorAgent:
             conditions_list = ["clear", "clouds", "rain", "thunderstorm", "haze"]
             temp_range = (18, 35)
 
+            # Load existing data
+            if os.path.exists(config.WEATHER_FILE):
+                with open(config.WEATHER_FILE, "r") as f:
+                    weather_data = json.load(f)
+            else:
+                weather_data = {}
+
+            current_location_weather = {}
             weather_locations = []
             for c in coords:
                 weather_locations.append({
@@ -400,13 +408,16 @@ class DataGeneratorAgent:
                     "conditions": random.choice(conditions_list)
                 })
 
-            # Current timestamp in ISO format (with timezone)
-            ist_offset = timedelta(hours = 5, minutes = 30)
-            timestamp = datetime.now(timezone(ist_offset)).isoformat()
+                # Current timestamp in ISO format (with timezone)
+                ist_offset = timedelta(hours = 5, minutes = 30)
+                timestamp = datetime.now(timezone(ist_offset)).isoformat()
 
-            weather_data = {
-                "timestamp": timestamp,
-                "locations": weather_locations
-            }
+                current_location_weather = {
+                    "timestamp": timestamp,
+                    "locations": weather_locations
+                }
+
+                weather_data[location] = current_location_weather
+
             with open(config.WEATHER_FILE, 'w') as file:
                 json.dump(weather_data, file, indent = 4)

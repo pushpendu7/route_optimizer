@@ -7,15 +7,22 @@ from agents import DataGeneratorAgent, MonitorAgent
 # Set Page Config
 st.set_page_config(
     page_title = "EventWatch",
-    page_icon = "📦",
+    page_icon = "🚨",
 )
 
 with st.container(horizontal = True, vertical_alignment = "bottom"):
     st.image(Path(config.ASSETS_DIR, "eventwatch.png"), width = 50)
     st.header(":blue[EventWatch]", divider = "rainbow", anchor = False)
 
+
+option_container = st.container(horizontal = True, vertical_alignment = "center")
+locations = config.locations
+option_container.markdown(":grey[Locations:]", width = "content")
+selected_location = option_container.selectbox("Locations", options = locations.keys(), width = 200, label_visibility = "collapsed")
+
+
 data_generator = DataGeneratorAgent()
-monitor = MonitorAgent(traffic_feed = utils.load_json(config.TRAFFIC_FILE), weather_feed = utils.load_json(config.WEATHER_FILE))
+monitor = MonitorAgent(traffic_feed = utils.load_json(config.TRAFFIC_FILE), weather_feed = utils.load_json(config.WEATHER_FILE)[selected_location] if selected_location in utils.load_json(config.WEATHER_FILE) else {})
 
 cols = st.columns([0.33, 0.33, 0.33])
 tile_height = 500
@@ -25,17 +32,20 @@ with cols[0]:
             st.subheader("🚦Live Traffic Feed", divider = "rainbow", anchor = False)
             if st.button(":material/refresh:", help = "Refresh traffic data"):
                 pass
-        utils.st.dataframe(utils.get_traffic_data(utils.load_json(config.TRAFFIC_FILE)), width = "content", hide_index = True)
+        st.dataframe(utils.get_traffic_data(utils.load_json(config.TRAFFIC_FILE)), width = "content", hide_index = True)
 
 with cols[1]:
     with st.container(border = True, height = tile_height):
         with st.container(horizontal = True, vertical_alignment = "bottom"):
             st.subheader("🌤️ Live Weather Feed", divider = "rainbow", anchor = False)
             if st.button(":material/refresh:", help = "Refresh weather data"):
-                data_generator.generate_weather_data(utils.load_json(config.DELIVERIES_FILE))
+                data_generator.generate_weather_data(utils.load_json(config.DELIVERIES_FILE)[selected_location] if selected_location in utils.load_json(config.DELIVERIES_FILE) else {}, selected_location)
                 st.rerun()
-        utils.st.dataframe(utils.get_weather_data(utils.load_json(config.WEATHER_FILE)), width = "content", hide_index = True)
-
+        weather_data = utils.get_weather_data(utils.load_json(config.WEATHER_FILE)[selected_location] if selected_location in utils.load_json(config.WEATHER_FILE) else {})
+        if len(weather_data) != 0:
+            st.dataframe(utils.get_weather_data(utils.load_json(config.WEATHER_FILE)[selected_location] if selected_location in utils.load_json(config.WEATHER_FILE) else {}), width = "content", hide_index = True)
+        else:
+            st.markdown("*:grey[(No weather data)]*")
 with cols[2]:
     with st.container(border = True, horizontal_alignment = "center", height = tile_height):
         with st.container(horizontal = True, vertical_alignment = "bottom"):

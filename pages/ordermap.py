@@ -41,8 +41,6 @@ if selected_location:
 data_generator = DataGeneratorAgent()
 clusterer = ClusteringAgent(selected_location)
 
-
-
 cols = st.columns([0.3, 0.7])
 
 with cols[0]:

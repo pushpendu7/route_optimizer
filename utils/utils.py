@@ -299,10 +299,13 @@ def get_weather_data(data):
     }
     """
     # Convert list of locations to DataFrame
-    df = pd.DataFrame(data["locations"])
+    if "locations" in data:
+        df = pd.DataFrame(data["locations"])
 
-    # Add timestamp column
-    df["timestamp"] = data["timestamp"]
+        # Add timestamp column
+        df["timestamp"] = data["timestamp"]
+    else:
+        df = pd.DataFrame()
 
     return df
 
